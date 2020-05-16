@@ -1,11 +1,49 @@
+import torch
+from grad import *
 class SGD():
-    def __init__(self, params, lr = 0.1, nesterov = False, momentum = 0, weight_decay = 0):
+    def __init__(self, params, lr = 0.1, nesterov = False, momentum = 0, weight_decay = 0, epoch = 50, data, cost = 0):
+        '''
+        The following costs imply the following loss functions:
+            0 - Mean Squared Error
+            1 - Mean Absolute Error
+            2 - Huber Loss
+            3 - Log Cosh loss function
+            4 - Quantile Error
+        '''
         if lr < 0.0:
             raise ValueError("Invalid Learning Rate")
         if momentum < 0:
             raise ValueError("Invalid momentum value")
         if weight_decay < 0:
             raise ValueError("Invalid weight decay value")
-        defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay)
+        if epoch < 1:
+            raise ValueError("Invalid epoch value")
+        if cost<0 or cost >4:
+            raise ValueError("Invalid cost value, it should be between 0 and 4")
+        defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
     
-    
+        
+    def sgd(self):
+        gradient = 0
+        momentum_term = 0
+        for i in range(defaults[epoch]):
+            if defaults[nesterov] == True:
+                params = params - (defaults[momentum]*momentum_term)
+            gradient = grad(cost, data, params)
+            '''
+            if cost == 0:
+                gradient = grad.grad_msd(data, params)
+            if cost == 1:
+                gradient = grad.grad_msa(data, params)
+            if cost == 2:
+                gradient = grad.grad_huber(data, params)
+            if cost == 3:
+                gradient = grad.grad_log_cosh(data, params)
+            if cost == 4:
+                gradient = grad.grad_quantile(data, params)
+            '''
+            momentum_term = (defaults[momentum] * momentum_term)  + (defaults[lr]*gradient)
+            params = params - momentum_term
+        return params
+            
+            
