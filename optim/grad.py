@@ -3,5 +3,19 @@ class grad():
         self.cost = cost
         self.data = data
         self.params = params
-    if __name__ == "__main__":
         
+    def grad_mse(self):
+        
+    
+    if __name__ == "__main__":
+        if cost == 0:
+            gradient = grad_mse()
+        if cost == 1:
+            gradient = grad_mae()
+        if cost == 2:
+            gradient = grad_huber()
+        if cost == 3:
+            gradient = grad_log_cosh()
+        if cost == 4:
+            gradient = grad_quantile()
+        return gradient

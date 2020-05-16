@@ -1,7 +1,7 @@
 import torch
 from grad import *
-class SGD():
-    def __init__(self, params, lr = 0.1, nesterov = False, momentum = 0, epoch = 50, data, cost = 0):
+class Adagrad():
+    def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
@@ -15,18 +15,14 @@ class SGD():
         '''
         if lr < 0.0:
             raise ValueError("Invalid Learning Rate")
-        if momentum < 0:
-            raise ValueError("Invalid momentum value")
-        if weight_decay < 0:
-            raise ValueError("Invalid weight decay value")
         if epoch < 1:
             raise ValueError("Invalid epoch value")
         if cost<0 or cost >4:
             raise ValueError("Invalid cost value, it should be between 0 and 4")
-        defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
+        defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def sgd(self):
+    def adagrad(self):
         gradient = 0
         momentum_term = 0
         for i in range(defaults[epoch]):
