@@ -1,5 +1,6 @@
 import torch
 from grad import *
+import numpy as np
 class SGD():
     def __init__(self, params, lr = 0.1, nesterov = False, momentum = 0, epoch = 50, data, cost = 0):
         '''

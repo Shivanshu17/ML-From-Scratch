@@ -1,7 +1,8 @@
 import torch
 from grad import *
+import numpy as np
 class Adagrad():
-    def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0):
+    def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
@@ -23,14 +24,22 @@ class Adagrad():
     
         
     def adagrad(self):
+        
+        '''
+        Again, special care will have to be taken at this stage as well, to ensure that the vectorised updates, that is,
+        each parameter (among the 'params') is updated according to its own modified learning rate, which will be different
+        for each parameter.
+        
+        
+        squared_gradient -> Numpy Array
+        
+        '''
         gradient = 0
-        momentum_term = 0
+        sum_squared_gradient = 0
         for i in range(defaults[epoch]):
-            if defaults[nesterov] == True:
-                future_params = params - (defaults[momentum]*momentum_term)
-                gradient = grad(cost, data, future_params)
-            else:
-                gradient = grad(cost, data, params)
+            gradient = grad(cost, data, params)
+            sum_squared_gradient = sum_squared_gradient + squared_grad(gradient)
+            val = np.sqrt(sum_squared_gradient + ep)
             '''
             if cost == 0:
                 gradient = grad.grad_msd(data, params)
@@ -43,8 +52,15 @@ class Adagrad():
             if cost == 4:
                 gradient = grad.grad_quantile(data, params)
             '''
-            momentum_term = (defaults[momentum] * momentum_term)  + (defaults[lr]*gradient)
-            params = params - momentum_term
+            for i in range(len(params)):
+                params[i] = params[i] - ((lr/val[i])*gradient[i])
         return params
-            
-            
+    
+    def squared_grad(self, gradient):
+        
+        '''
+        This function will derive the squared values of all the individual gradients, it has to do so, such that the 
+        array form of the data is maintained. Something about the 'units' and 'vector product' was mentioned in the approach
+        nuances and will have to be ensured in this function.
+        
+        '''
