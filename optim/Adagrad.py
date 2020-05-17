@@ -26,13 +26,13 @@ class Adagrad():
     def adagrad(self):
         
         '''
-        Again, special care will have to be taken at this stage as well, to ensure that the vectorised updates, that is,
-        each parameter (among the 'params') is updated according to its own modified learning rate, which will be different
-        for each parameter.
+        This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.
         
-        
-        squared_gradient -> Numpy Array
-        
+        Args:
+            squared_gradient -> Numpy Array
+        Returns:
+            params -> Numpy Array representing the updated parameters.
+            
         '''
         gradient = 0
         sum_squared_gradient = 0
@@ -40,27 +40,23 @@ class Adagrad():
             gradient = grad(cost, data, params)
             sum_squared_gradient = sum_squared_gradient + squared_grad(gradient)
             val = np.sqrt(sum_squared_gradient + ep)
-            '''
-            if cost == 0:
-                gradient = grad.grad_msd(data, params)
-            if cost == 1:
-                gradient = grad.grad_msa(data, params)
-            if cost == 2:
-                gradient = grad.grad_huber(data, params)
-            if cost == 3:
-                gradient = grad.grad_log_cosh(data, params)
-            if cost == 4:
-                gradient = grad.grad_quantile(data, params)
-            '''
             for i in range(len(params)):
                 params[i] = params[i] - ((lr/val[i])*gradient[i])
         return params
     
     def squared_grad(self, gradient):
         
-        '''
-        This function will derive the squared values of all the individual gradients, it has to do so, such that the 
-        array form of the data is maintained. Something about the 'units' and 'vector product' was mentioned in the approach
-        nuances and will have to be ensured in this function.
+        '''     
+        This function returns the squared values of each gradient
+        
+        Args:
+            gradient -> A numpy array containing gradients of all parameters.
+            
+        Returns:
+            squared_gradient -> A numpy array such that each element has been squared.
         
         '''
+    
+    if __name__ == "__main__":
+        params = adagrad()
+        return params

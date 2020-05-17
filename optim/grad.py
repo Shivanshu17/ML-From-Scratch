@@ -1,12 +1,22 @@
 import numpy as np
+import pandas as pd
 class grad():
     '''
-    This class will serve to return the gradients of various cost functions as used within various optimisation algorithms.
-    I will have to manually derive the gradient formulas and code the functions such that the process can either be vectorised
-    (ideal scenario) or each individual gradient can effectively be derived. I will have to handle the X, Y, H(x) and therefore 
-    apply some basic data manipulation operations on the 'data' parameter as well.
+    This class will produce the gradients of the cost functions in reference to the data provided.
     
-    gradient -> Numpy array containing the gradients of all the parameters.
+    Args:
+        cost (int) -> Determines the cost function to be employed according to the following scheme:
+            0 - Mean Squared Error
+            1 - Mean Absolute Error
+            2 - Huber Loss
+            3 - Log Cosh loss function
+            4 - Quantile Error
+        data (DataFrame) -> Represents the data including the instances and the intended output values.
+        params (iterable) -> Array to store the parameters of the cost function.
+    
+    Returns:
+        gradient -> Numpy array containing the gradients of all the parameters.
+    
     '''
     def __init__(self, cost = 0, data, params):
         self.cost = cost
@@ -14,6 +24,11 @@ class grad():
         self.params = params
         
     def grad_mse(self):
+        '''
+        This function derives the gradient of cost functions with mean squared error.
+        
+        
+        '''
         
     
     if __name__ == "__main__":
