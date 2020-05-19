@@ -134,7 +134,7 @@ class grad():
         output = data.output
         f_x = activation_function(data, params, activation)
         g_activation = grad_activation(data, activation, params)
-        param_grad = []
+        param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)
         for j in range(len(params)):
             instance_update = 0
