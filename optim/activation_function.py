@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import math
 class activation_function():
     ''' 
     This class will produce activations of the input data
@@ -61,11 +62,17 @@ class activation_function():
         if len(params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(data[i])            
+            instance_array = np.array(data[i])
+            if np.sum(np.multiply(instance_array, params)) < d_p:
+                activated_value.append(0)
+            else:
+                activated_value.append(1)
+        f_x = np.array(activated_value)
+        return f_x
 
             
             
-     def sigmoid_activation(self, d_p):
+     def sigmoid_activation(self):
         '''
         This function will return the sigmoid activation values of the input data
         
@@ -78,6 +85,13 @@ class activation_function():
         activated_value = []
         if len(params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            instance_array = np.array(data[i])
+            param_value = np.sum(np.multiply(instance_array, params))
+            exp_param_value = math.exp(param_value)
+            activated_value.append((1/(1+exp_param_value)))
+        f_x = np.array(activated_value)
+        return f_x
         
      def tanh_activation(self, d_p):
         '''
@@ -92,9 +106,67 @@ class activation_function():
         activated_value = []
         if len(params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
-            
+        for i in range(no_of_instance):
+            instance_array = np.array(data[i])
+            param_value = np.sum(np.multiply(instance_array, params))
+            exp_param_value = math.exp(param_value)
+            neg_exp = math.exp(-1*param_value)
+            activated_value.append((exp_param_value - neg_exp)/(exp_param_value + neg_exp))
+        f_x = np.array(activated_value)
+        return f_x
+    
+    
+    def relu_activation(self):
+        '''
+         This function will return the relu activation values of the input data
         
+        Returns:
+            f_x (iterable) -> A numpy array of m activation values
         
+        '''
+         no_of_instance = len(data)
+        no_of_cols = len(data.columns)
+        activated_value = []
+        if len(params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            isntance_array = np.array(data[i])
+            param_value = np.sum(np.multiply(instance_array, params))
+            if param_value>0:
+                activated_value.append(param_value)
+            else:
+                activated_value.append(0)
+        f_x = np.array(activated_value)
+        return f_x
+    
+    
+    def leaky_relu_activation(self, alpha):
+        '''
+         This function will return the leaky relu activation values of the input data
+        
+        Returns:
+            f_x (iterable) -> A numpy array of m activation values
+        
+        '''
+        no_of_instance = len(data)
+        no_of_cols = len(data.columns)
+        activated_value = []
+        if alpha>=1:
+            raise ValueError("Alpha for leaky relu should be less than 1")
+        if len(params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            isntance_array = np.array(data[i])
+            param_value = np.sum(np.multiply(instance_array, params))
+            if param_value>0:
+                activated_value.append(param_value)
+            else:
+                activated_value.append(alpha * param_value)
+        f_x = np.array(activated_value)
+        return f_x
+    
+    
+    
     
         
         
