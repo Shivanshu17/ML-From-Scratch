@@ -37,14 +37,14 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
             
         '''
-        no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
-        if len(params)!= no_of_cols:
+        if len(self.params)!= no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(data[i])
-            activated_value.append(np.sum(np.multiply(instance_array, params)))
+            instance_array = np.array(self.data[i])
+            activated_value.append(np.sum(np.multiply(instance_array, self.params)))
         f_x = np.array(activated_value)
         return f_x
     
@@ -56,14 +56,14 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
         
         '''
-        no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
-        if len(params) != no_of_cols:
+        if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(data[i])
-            if np.sum(np.multiply(instance_array, params)) < d_p:
+            instance_array = np.array(self.data[i])
+            if np.sum(np.multiply(instance_array, self.params)) < d_p:
                 activated_value.append(0)
             else:
                 activated_value.append(1)
@@ -72,7 +72,7 @@ class activation_function():
 
             
             
-     def sigmoid_activation(self):
+    def sigmoid_activation(self):
         '''
         This function will return the sigmoid activation values of the input data
         
@@ -80,20 +80,20 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
         
         '''
-        no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
-        if len(params) != no_of_cols:
+        if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(data[i])
-            param_value = np.sum(np.multiply(instance_array, params))
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             activated_value.append((1/(1+exp_param_value)))
         f_x = np.array(activated_value)
         return f_x
         
-     def tanh_activation(self, d_p):
+    def tanh_activation(self, d_p):
         '''
         This function will return the tanh activation values of the input data
         
@@ -101,14 +101,14 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
         
         '''
-        no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
-        if len(params) != no_of_cols:
+        if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(data[i])
-            param_value = np.sum(np.multiply(instance_array, params))
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             neg_exp = math.exp(-1*param_value)
             activated_value.append((exp_param_value - neg_exp)/(exp_param_value + neg_exp))
@@ -124,14 +124,14 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
         
         '''
-         no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
-        if len(params) != no_of_cols:
+        if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            isntance_array = np.array(data[i])
-            param_value = np.sum(np.multiply(instance_array, params))
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
             if param_value>0:
                 activated_value.append(param_value)
             else:
@@ -148,16 +148,16 @@ class activation_function():
             f_x (iterable) -> A numpy array of m activation values
         
         '''
-        no_of_instance = len(data)
-        no_of_cols = len(data.columns)
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
         activated_value = []
         if alpha>=1:
             raise ValueError("Alpha for leaky relu should be less than 1")
-        if len(params) != no_of_cols:
+        if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            isntance_array = np.array(data[i])
-            param_value = np.sum(np.multiply(instance_array, params))
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
             if param_value>0:
                 activated_value.append(param_value)
             else:
@@ -166,8 +166,54 @@ class activation_function():
         return f_x
     
     
+    def silu_activation(self):
+        '''
+        This function will return the silu activaton values of the input data. SiLU was proposed by researchers at Google,
+        and has been tauted as better performer than Leaky ReLU in Computer Vision domain
+        
+        Returns:
+            f_x (iterable) -> A numpy array of m activation values
+        
+        '''
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            exp_param_value = math.exp(param_value)
+            activated_value.append(param_value*(1/(1+exp_param_value)))
+            
+        f_x = np.array(activated_value)
+        return f_x
     
-    
+    def softmax_activation(self):
+        '''
+        This function will returnt the softmax activaion values of the input data. This is typically used in the last layer
+        of a multiclass classification problem.
+        
+        Returns:
+            f_x (iterable) -> A numpy array of m activation values
+        
+        '''
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        activated_value = []
+        exp_value = []
+        sum_value = 0
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            exp_param_value = math.exp(param_value)
+            exp_value.append(exp_param_value)
+            sum_value = sum_value + exp_param_value
+        exp_value_array = np.array(exp_param_value)
+        f_x = exp_value_array/sum_value
+        return f_x
         
         
     if __name__ == "__main__":
