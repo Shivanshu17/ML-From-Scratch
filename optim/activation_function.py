@@ -140,7 +140,7 @@ class activation_function():
         return f_x
     
     
-    def leaky_relu_activation(self, alpha):
+    def leaky_relu_activation(self):
         '''
          This function will return the leaky relu activation values of the input data
         
@@ -151,8 +151,6 @@ class activation_function():
         no_of_instance = len(self.data)
         no_of_cols = len(self.data.columns)
         activated_value = []
-        if alpha>=1:
-            raise ValueError("Alpha for leaky relu should be less than 1")
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
@@ -161,7 +159,7 @@ class activation_function():
             if param_value>0:
                 activated_value.append(param_value)
             else:
-                activated_value.append(alpha * param_value)
+                activated_value.append(0.1 * param_value)
         f_x = np.array(activated_value)
         return f_x
     

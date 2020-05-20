@@ -23,14 +23,101 @@ class grad_activation():
     
     
     '''    
-    def __init__(self, data, params, activation = 0):
+    def __init__(self, data, params, activation = 0, i):
         self.data = data
         self.params = params
         self.activation = activation
-        
+        self.i = i
     
     def linear_grad(self):
-        
+        i_col = self.data.iloc[:, self.i]
+        g_activation = np.array(i_col)
+        return g_activation
+    
+    def binary_grad(self):
+        i_col = self.data.iloc[:, self.i]
+        g_activation = np.array(i_col)
+        g_activation = g_activation * 0
+        return g_activation
+    
+    def sigmoid_grad(self):
+        i_col = np.array(self.data.iloc[:, self.i])
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for j in range(no_of_instance):
+            instance_array = np.array(self.data[j])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            exp_param_value = math.exp(param_value)
+            activated_value.append((1/(1+exp_param_value)*(1+exp_param_value))*exp_param_value)
+        g_activation = np.multiply(np.array(activation_value), i_col)
+        return g_activation
+    
+    def tanh_grad(self):
+        i_col = np.array(self.data.iloc[:, self.i])
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for j in range(no_of_instance):
+            instance_array = np.array(self.data[j])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            exp_param_value = math.exp(param_value)
+            square_exp_value = math.exp(2*param_value)
+            activated_value.append((1/(1+exp_param_value)*(1+exp_param_value))*2*square_exp_value)
+        g_activation = np.multiply(np.array(activation_value), i_col)
+        return g_activation
+    
+    def relu_grad(self):
+        i_col = np.array(self.data.iloc[:, self.i])
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        grad_activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for j in range(no_of_instance):
+            instance_array = np.array(self.data[j])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            if param_value>0:
+                grad_activated_value.append(1)
+            else:
+                grad_activated_value.append(0)
+        g_activation = np.array(grad_activated_value)
+        return g_activation
+    
+    def leaky_relu_grad(self):
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        grad_activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for j in range(no_of_instance):
+            instance_array = np.array(self.data[j])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            if param_value>0:
+                grad_activated_value.append(1)
+            else:
+                grad_activated_value.append(0.1)
+        g_activation = np.array(grad_activated_value)
+        return g_activation
+    
+    def silu_grad(self):
+        i_col = np.array(self.data.iloc[:, self.i])
+        no_of_instance = len(self.data)
+        no_of_cols = len(self.data.columns)
+        activated_value = []
+        if len(self.params) != no_of_cols:
+            raise ValueError("The number of parameters should be equal to the number of columns")
+        for i in range(no_of_instance):
+            instance_array = np.array(self.data[i])
+            param_value = np.sum(np.multiply(instance_array, self.params))
+            exp_param_value = math.exp(param_value)
+            activated_value.append(param_value*((1+ (2*exp_param_value)/((1+exp_param_value)*(1+exp_param_value))))
+        g_activation = np.multiply(np.array(activation_value), i_col)
+        return g_activation
     
     
     if __name__ == "__main__":

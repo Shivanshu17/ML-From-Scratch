@@ -34,7 +34,7 @@ class grad():
                           So, each instance will create just one f(x) value.
         output (iterable) -> A 1D numpy array containing the actual output values. These can either be derived by taking out
                              the last row of the data, or if the dataframe allows for it - the .output attribute of the data object.                  
-        g_activation (iterable) -> It will store the gradient of activation function (with respect to the data) as returned 
+        g_activation (Iterable) -> It will store the gradient of activation function (with respect to the data) as returned 
                                     from the 'grad_activation' function.
                                     
         returns:
@@ -42,11 +42,12 @@ class grad():
         '''
         output = data.output
         f_x = activation_function(data, params, activation)
-        g_activation = grad_activation(data, activation, params)
+       
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(params)):
-            param_grad.append((reduce(lambda item1, item2: item1+item2, map((f_x - output) * g_activation[i] )))/(2*number_of_instance))
+            g_activation = grad_activation(data, activation, params, i)
+            param_grad.append((np.sum(np.multiply((f_x - output),  g_activation)))/(2*number_of_instance))
         gradient = np.array(param_grad)
         return gradient
     
@@ -58,7 +59,7 @@ class grad():
                           So, each instance will create just one f(x) value.
         output (iterable) -> A 1D numpy array containing the actual output values. These can either be derived by taking out
                              the last row of the data, or if the dataframe allows for it - the .output attribute of the data object.                  
-        g_activation (iterable) -> It will store the gradient of activation function (with respect to the data) as returned 
+        g_activation (DataFrame) -> It will store the gradient of activation function (with respect to the data) as returned 
                                     from the 'grad_activation' function.
                                     
         returns:
@@ -67,11 +68,11 @@ class grad():
         '''
         output = data.output
         f_x = activation_function(data, params, activation)
-        g_activation = grad_activation(data, activation, params)
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(params)):
-            param_grad.append(g_activation[i])
+            g_activation = grad_activation(data, activation, params, i)
+            param_grad.append(np.sum(g_activation))
         gradient = np.array(param_grad)
         return gradient
     
@@ -87,16 +88,16 @@ class grad():
         '''
         output = data.output
         f_x = activation_function(data, params, activation)
-        g_activation = grad_activation(data, activation, params)
         param_grad = []
         number_of_instance = len(output)
         for j in range(len(params)):
+            g_activation = grad_activation(data, activation, params, j)
             instance_update = 0
             for i in range(number_of_instances):
                 if (f_x[i] - y[i] <= h_p):
-                    instance_update = instance_update + ((f_x - output) * g_activation[j])
+                    instance_update = instance_update + ((f_x[i] - output[i]) * g_activation[i])
                 else:
-                    instance_update = instance_update + (h_p * g_activation[j])
+                    instance_update = instance_update + (h_p * g_activation[i])
             param_grad.append(instance_update)
         gradient = np.array(param_grad)
         return gradient
@@ -112,12 +113,12 @@ class grad():
         '''
         output = data.output
         f_x = activation_function(data, params, activation)
-        g_activation = grad_activation(data, activation, params)
         param_grad = []
         number_of_instances = len(output)
         for j in range(len(params)):
+            g_activation = grad_activation(data, activation, params, j)
             grad_value = np.multiply((1/np.cosh(output - f_x)), np.sinh(output - f_x))
-            param_grad.append(reduce(lambda item1, item2: item1 + item2, grad_value.tolist()) * g_activation[j])
+            param_grad.append(np.sum(np.multiply(grad_value, g_activation)))
         gradient = np.array(param_grad)
         return gradient
     
@@ -133,16 +134,16 @@ class grad():
         '''
         output = data.output
         f_x = activation_function(data, params, activation)
-        g_activation = grad_activation(data, activation, params)
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)
         for j in range(len(params)):
+            g_activation = grad_activation(data, activation, params, j)
             instance_update = 0
             for i in range(number_of_instance):
                 if output[i] <= f_x[i]:
-                    instance_update = instance_update + q * g_activation[j]
+                    instance_update = instance_update + q * g_activation[i]
                 else:
-                    instance_update = instance_update + (q-1)* g_activation[j]
+                    instance_update = instance_update + (q-1)* g_activation[i]
             param_grad.append(instance_update)
         gradient = np.array(param_grad)
         return gradient
