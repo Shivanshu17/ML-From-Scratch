@@ -1,7 +1,7 @@
 =from grad_loss import *
 import numpy as np
 import pandas as pd
-class Adagrad():
+class Adam():
     def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.01):
         '''
         The following costs imply the following loss functions:
@@ -25,7 +25,7 @@ class Adagrad():
         defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adagrad(self):
+    def adam(self, b1 = 0.9, b2= 0.99):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.
@@ -37,13 +37,15 @@ class Adagrad():
             
         '''
         gradient = 0
-        sum_squared_gradient = 0
-        for i in range(defaults[epoch]):
-            gradient = grad_loss(cost, data, params, activation)
-            sum_squared_gradient = sum_squared_gradient + squared_grad(gradient)
+        v = 0
+        m = 0
+        for i in range(self.epochs):
+            gradient = grad_loss(self.cost, self.data, self.params, self.activation)
+            m = b1 * m + (1-b1)* gradient
+            v = b2 * v + (1-b2)*squared_grad(gradient)
             val = np.sqrt(sum_squared_gradient + ep)
             for i in range(len(params)):
-                params[i] = params[i] - ((lr/val[i])*gradient[i])
+                self.params[i] = self.params[i] - ((lr/val[i])*gradient[i])
         return params
     
     def squared_grad(self, gradient):
@@ -63,5 +65,5 @@ class Adagrad():
         return squared_gradient
     
     if __name__ == "__main__":
-        params = adagrad()
+        params = adam()
         return params

@@ -63,5 +63,5 @@ class Adadelta():
         return squared_gradient
     
     if __name__ == "__main__":
-        params = adagrad()
+        params = adadelta()
         return params
