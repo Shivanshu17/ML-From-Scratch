@@ -38,13 +38,13 @@ class Adagrad():
         '''
         gradient = 0
         sum_squared_gradient = 0
-        for i in range(defaults[epoch]):
-            gradient = grad_loss(cost, data, params, activation)
+        for i in range(self.epoch):
+            gradient = grad_loss(self.cost, self.data, self.params, self.activation)
             sum_squared_gradient = sum_squared_gradient + squared_grad(gradient)
-            val = np.sqrt(sum_squared_gradient + ep)
-            for i in range(len(params)):
-                params[i] = params[i] - ((lr/val[i])*gradient[i])
-        return params
+            val = np.sqrt(sum_squared_gradient + self.ep)
+            for i in range(len(self.params)):
+                self.params[i] = self.params[i] - ((self.lr/val[i])*gradient[i])
+        return self.params
     
     def squared_grad(self, gradient):
         

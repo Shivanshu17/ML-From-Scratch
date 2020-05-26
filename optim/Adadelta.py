@@ -41,10 +41,10 @@ class Adadelta():
         for i in range(self.epoch):
             gradient = grad_loss(self.cost, self.data, self.params, self.activation)
             sum_squared_gradient = alpha * sum_squared_gradient + (1-alpha) * squared_grad(gradient)
-            val = np.sqrt(sum_squared_gradient + ep)
+            val = np.sqrt(sum_squared_gradient + self.ep)
             for i in range(len(self.params)):
-                self.params[i] = self.params[i] - ((lr/val[i])*gradient[i])
-        return params
+                self.params[i] = self.params[i] - ((self.lr/val[i])*gradient[i])
+        return self.params
     
     def squared_grad(self, gradient):
         

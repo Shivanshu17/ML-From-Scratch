@@ -1,4 +1,4 @@
-=from grad_loss import *
+from grad_loss import *
 import numpy as np
 import pandas as pd
 class Adam():
@@ -38,14 +38,14 @@ class Adam():
         '''
         gradient = 0
         v = 0
-        m = 0
+        m = grad_loss(self.cost, self.data, self.params, self.activation)
         for i in range(self.epochs):
             gradient = grad_loss(self.cost, self.data, self.params, self.activation)
             m = b1 * m + (1-b1)* gradient
             v = b2 * v + (1-b2)*squared_grad(gradient)
-            val = np.sqrt(sum_squared_gradient + ep)
-            for i in range(len(params)):
-                self.params[i] = self.params[i] - ((lr/val[i])*gradient[i])
+            val = np.sqrt(v + self.ep)
+            for i in range(len(self.params)):
+                self.params[i] = self.params[i] - ((self.lr/val[i])*m[i])
         return params
     
     def squared_grad(self, gradient):
