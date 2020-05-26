@@ -1,7 +1,7 @@
 from grad_loss import *
 import numpy as np
 import pandas as pd
-class Adagrad():
+class Adadelta():
     def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.01):
         '''
         The following costs imply the following loss functions:
@@ -25,7 +25,7 @@ class Adagrad():
         defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adagrad(self):
+    def adadelta(self, alpha = 0.9):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.
@@ -38,12 +38,12 @@ class Adagrad():
         '''
         gradient = 0
         sum_squared_gradient = 0
-        for i in range(defaults[epoch]):
-            gradient = grad_loss(cost, data, params, activation)
-            sum_squared_gradient = sum_squared_gradient + squared_grad(gradient)
+        for i in range(self.epoch):
+            gradient = grad_loss(self.cost, self.data, self.params, self.activation)
+            sum_squared_gradient = alpha * sum_squared_gradient + (1-alpha) * squared_grad(gradient)
             val = np.sqrt(sum_squared_gradient + ep)
-            for i in range(len(params)):
-                params[i] = params[i] - ((lr/val[i])*gradient[i])
+            for i in range(len(self.params)):
+                self.params[i] = self.params[i] - ((lr/val[i])*gradient[i])
         return params
     
     def squared_grad(self, gradient):
