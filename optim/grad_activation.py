@@ -17,7 +17,7 @@ class grad_activation():
             5  -  Leaky ReLU Activation
             6  -  SiLU Activation
             7  -  Softmax Function
-        
+        i (int) -> Represents the parameter point under consideration (from the list of all the parameters)
     Returns:
         g_activation (iterable) -> Representing an numpy array of m activation values - one for each instance.
     
@@ -121,21 +121,21 @@ class grad_activation():
     
     
     if __name__ == "__main__":
-        if activation == 0:
+        if self.activation == 0:
             g_activation = linear_grad()
-        if activation == 1:
+        if self.activation == 1:
             g_activation = binary_grad()
-        if activation == 2:
+        if self.activation == 2:
             g_activation = sigmoid_grad()
-        if activation == 3:
+        if self.activation == 3:
             g_activation = tanh_grad()
-        if activation == 4:
+        if self.activation == 4:
             g_activation = relu_grad()
-        if activation == 5:
+        if self.activation == 5:
             g_activation = leaky_relu_grad()
-        if activation == 6:
+        if self.activation == 6:
             g_activation = silu_grad()
-        if activation ==7:
+        if self.activation ==7:
             g_activation = softmax_grad()
         return g_activation
     

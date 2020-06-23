@@ -30,12 +30,14 @@ class grad():
         gradient -> Numpy array containing the gradients of all the parameters.
     
     '''
-    def __init__(self,  data, params, cost = 0, activation = 0, h_p = 0):
+    def __init__(self,  data, params, cost = 0, activation = 0, h_p = 0, q= 0):
+        # I could treat the gradient variable as an object variable as well... But, I'll do that if I feel the need
         self.cost = cost
         self.data = data
         self.params = params
         self.activation = activation
         self.h_p = h_p
+        self.q = q
         
     def grad_mse(self):
         '''
@@ -97,7 +99,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
         
         '''
-        output = self.data.output  #Or this line could be data.iloc[:,-1]
+        output = self.data.output  #Or this line could be self.data.iloc[:,-1]
         f_x = activation_function(self.data, self.params, self.activation)
         param_grad = []
         number_of_instance = len(output)
@@ -105,10 +107,10 @@ class grad():
             g_activation = grad_activation(self.data, self.activation, self.params, j)
             instance_update = 0
             for i in range(number_of_instances):
-                if (f_x[i] - y[i] <= h_p):
+                if (f_x[i] - y[i] <= self.h_p):
                     instance_update = instance_update + ((f_x[i] - output[i]) * g_activation[i])
                 else:
-                    instance_update = instance_update + (h_p * g_activation[i])
+                    instance_update = instance_update + (self.h_p * g_activation[i])
             param_grad.append(instance_update)
         gradient = np.array(param_grad)
         return gradient
@@ -122,19 +124,19 @@ class grad():
             gradient (iterable) -> Gradient of the cost funciton.
         
         '''
-        output = data.output
-        f_x = activation_function(data, params, activation)
+        output = self.data.output  #Or this line could be self.data.iloc[:,-1]
+        f_x = activation_function(self.data, self.params, self.activation)
         param_grad = []
         number_of_instances = len(output)
-        for j in range(len(params)):
-            g_activation = grad_activation(data, activation, params, j)
+        for j in range(len(self.params)):
+            g_activation = grad_activation(self.data, self.activation, self.params, j)
             grad_value = np.multiply((1/np.cosh(output - f_x)), np.sinh(output - f_x))
             param_grad.append(np.sum(np.multiply(grad_value, g_activation)))
         gradient = np.array(param_grad)
         return gradient
     
     
-    def quantile_loss(self, q):
+    def quantile_loss(self):
         '''
         This function returns the gradient derived with a quantile cost function.
         
@@ -143,31 +145,31 @@ class grad():
             gradient (iterable) -> Gradient of the cost function
         
         '''
-        output = data.output
-        f_x = activation_function(data, params, activation)
+        output = self.data.output #Or this line could be self.data.iloc[:,-1]
+        f_x = activation_function(self.data, self.params, self.activation)
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)
-        for j in range(len(params)):
-            g_activation = grad_activation(data, activation, params, j)
+        for j in range(len(self.params)):
+            g_activation = grad_activation(self.data, self.activation, self.params, j)
             instance_update = 0
             for i in range(number_of_instance):
                 if output[i] <= f_x[i]:
-                    instance_update = instance_update + q * g_activation[i]
+                    instance_update = instance_update + self.q * g_activation[i]
                 else:
-                    instance_update = instance_update + (q-1)* g_activation[i]
+                    instance_update = instance_update + (self.q-1)* g_activation[i]
             param_grad.append(instance_update)
         gradient = np.array(param_grad)
         return gradient
     
     if __name__ == "__main__":
-        if cost == 0:
+        if self.cost == 0:
             gradient = grad_mse()
-        if cost == 1:
+        if self.cost == 1:
             gradient = grad_mae()
-        if cost == 2:
-            gradient = grad_huber(huber_point)
-        if cost == 3:
+        if self.cost == 2:
+            gradient = grad_huber()
+        if self.cost == 3:
             gradient = grad_log_cosh()
-        if cost == 4:
-            gradient = grad_quantile(quantile)
+        if self.cost == 4:
+            gradient = grad_quantile()
         return gradient
