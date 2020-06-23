@@ -16,15 +16,26 @@ class grad():
             4 - Quantile Error
         data (DataFrame) -> Represents the data including the instances and the intended output values.
         params (iterable) -> Array to store the parameters of the cost function.
-    
+        activation (int) -> Indicates the activation function being employed in the optimization function:
+            0  -  Linear Activation
+            1  -  Binary Activation
+            2  -  Sigmoid Activation
+            3  -  Tanh Activation
+            4  -  ReLU Activation
+            5  -  Leaky ReLU Activation
+            6  -  SiLU Activation
+            7  -  Softmax Function
+                
     Returns:
         gradient -> Numpy array containing the gradients of all the parameters.
     
     '''
-    def __init__(self, cost = 0, data, params, activation = 0):
+    def __init__(self,  data, params, cost = 0, activation = 0, h_p = 0):
         self.cost = cost
         self.data = data
         self.params = params
+        self.activation = activation
+        self.h_p = h_p
         
     def grad_mse(self):
         '''
@@ -40,13 +51,13 @@ class grad():
         returns:
             gradient (iterable) -> Gradient of the cost function.
         '''
-        output = data.output
-        f_x = activation_function(data, params, activation)
+        output = self.data.output #Or this line could be data.iloc[:,-1]
+        f_x = activation_function(self.data, self.params, self.activation)
        
         param_grad = []
         number_of_instance = len(output)
-        for i in range(len(params)):
-            g_activation = grad_activation(data, activation, params, i)
+        for i in range(len(self.params)):
+            g_activation = grad_activation(self.data, self.activation, self.params, i)
             param_grad.append((np.sum(np.multiply((f_x - output),  g_activation)))/(2*number_of_instance))
         gradient = np.array(param_grad)
         return gradient
@@ -66,17 +77,17 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
             
         '''
-        output = data.output
-        f_x = activation_function(data, params, activation)
+        output = self.data.output  #Or this line could be data.iloc[:,-1]
+        f_x = activation_function(self.data, self.params, self.activation)
         param_grad = []
         number_of_instance = len(output)
-        for i in range(len(params)):
-            g_activation = grad_activation(data, activation, params, i)
+        for i in range(len(self.params)):
+            g_activation = grad_activation(self.data, self.activation, self.params, i)
             param_grad.append(np.sum(g_activation))
         gradient = np.array(param_grad)
         return gradient
     
-    def grad_huber(self, h_p):
+    def grad_huber(self):
         '''
         This function derives the gradient of the cost function with huber loss.
         
@@ -86,12 +97,12 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
         
         '''
-        output = data.output
-        f_x = activation_function(data, params, activation)
+        output = self.data.output  #Or this line could be data.iloc[:,-1]
+        f_x = activation_function(self.data, self.params, self.activation)
         param_grad = []
         number_of_instance = len(output)
-        for j in range(len(params)):
-            g_activation = grad_activation(data, activation, params, j)
+        for j in range(len(self.params)):
+            g_activation = grad_activation(self.data, self.activation, self.params, j)
             instance_update = 0
             for i in range(number_of_instances):
                 if (f_x[i] - y[i] <= h_p):

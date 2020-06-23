@@ -25,26 +25,34 @@ class SGD():
             raise ValueError("Invalid epoch value")
         if cost<0 or cost >4:
             raise ValueError("Invalid cost value, it should be between 0 and 4")
+        self.params = params
+        self.lr = lr
+        self.nesterov = nesterov
+        self.momentum = momentum
+        self.epoch = epoch
+        self.data = data
+        self.cost = cost
         defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
-    
+        
         
     def sgd(self):
         '''
-        
-        
+        This function calculates the optimized values of parameters by employing stochastic gradient descent.
+        It checks whether or not the user wants nesterov acceleration component to be used.
+        And a zero value for momentum would mean no use of momentum term as well.
         
         '''
         gradient = 0
         momentum_term = 0
-        for i in range(defaults[epoch]):
-            if defaults[nesterov] == True:
-                future_params = params - (defaults[momentum]*momentum_term)
-                gradient = grad_loss(cost, data, future_params)
+        for i in range(self.epoch):
+            if self.nesterov == True:
+                future_params = self.params - (self.momentum*momentum_term)
+                gradient = grad_loss(self.cost, self.data, future_params)
             else:
-                gradient = grad(cost, data, params)
-            momentum_term = (defaults[momentum] * momentum_term)  + (defaults[lr]*gradient)
-            params = params - momentum_term
-        return params
+                gradient = grad_loss(self.cost, self.data, self.params)
+            momentum_term = (self.momentum * momentum_term)  + (self.lr*gradient)
+            self.params = self.params - momentum_term
+        return self.params
             
     if __name__ == "__main__":
         params = sgd()

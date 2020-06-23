@@ -22,6 +22,14 @@ class Adam():
             raise ValueError("Invalid cost value, it should be between 0 and 4")
         if activation<0 or activation >4:
             raise ValueError("Activation value should be between 0 and 4")
+        self.params = params
+        self.lr = lr
+        self.epoch = epoch
+        self.data = data
+        self.cost = cost
+        self.ep = ep
+        self.activation = activation
+        self.huber_point = huber_point
         defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
@@ -46,9 +54,9 @@ class Adam():
             val = np.sqrt(v + self.ep)
             for i in range(len(self.params)):
                 self.params[i] = self.params[i] - ((self.lr/val[i])*m[i])
-        return params
+        return self.params
     
-    def squared_grad(self, gradient):
+    def squared_grad(gradient):
         
         '''     
         This function returns the squared values of each gradient
