@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from functools import reduce
-from grad_activation import *
-from activation_function import *
+import grad_activation
+import activation_function
 class grad():
     '''
     This class will produce the gradients of the cost functions in reference to the data provided.
@@ -71,7 +71,8 @@ class grad():
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(self.params)):
-            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
+            g_act_obj = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
+            g_activation = g_act_obj.g_activation
             param_grad.append((np.sum(np.multiply((f_x - output),  g_activation)))/(2*number_of_instance))
         gradient = np.array(param_grad)
         return gradient
@@ -97,7 +98,8 @@ class grad():
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(self.params)):
-            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
+            g_act_obj = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
+            g_activation = g_act_obj.g_activation
             param_grad.append(np.sum(g_activation))
         gradient = np.array(param_grad)
         return gradient
@@ -118,10 +120,11 @@ class grad():
         param_grad = []
         number_of_instance = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_act_obj = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_activation = g_act_obj.g_activation
             instance_update = 0
-            for i in range(number_of_instances):
-                if (f_x[i] - y[i] <= self.h_p):
+            for i in range(number_of_instance):
+                if (f_x[i] - output[i] <= self.h_p):
                     instance_update = instance_update + ((f_x[i] - output[i]) * g_activation[i])
                 else:
                     instance_update = instance_update + (self.h_p * g_activation[i])
@@ -144,7 +147,8 @@ class grad():
         param_grad = []
         number_of_instances = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_act_obj = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_activation = g_act_obj.g_activation
             grad_value = np.multiply((1/np.cosh(output - f_x)), np.sinh(output - f_x))
             param_grad.append(np.sum(np.multiply(grad_value, g_activation)))
         gradient = np.array(param_grad)
@@ -166,7 +170,8 @@ class grad():
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_act_obj = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
+            g_activation = g_act_obj.g_activation
             instance_update = 0
             for i in range(number_of_instance):
                 if output[i] <= f_x[i]:

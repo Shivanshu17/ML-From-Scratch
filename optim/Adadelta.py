@@ -1,4 +1,4 @@
-from grad_loss import *
+import grad_loss
 import numpy as np
 import pandas as pd
 class Adadelta():

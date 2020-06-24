@@ -24,10 +24,28 @@ class activation_function():
     
     '''
     
-    def __init__(self, data, params, activation = 0):
+    def __init__(self, data, params, activation = 0, divide_point = 1):
         self.data = data
         self.params = params
         self.activation = activation
+        self.divide_point = divide_point   # I haven't taken this data as input from grad_loss function (so this can't be changed from calling function)
+        if self.activation == 0:
+            self.f_x = self.linear_activation()
+        if self.activation == 1:
+            self.f_x = self.binary_activation(self.divide_point)
+        if self.activation == 2:
+            self.f_x = self.sigmoid_activation()
+        if self.activation == 3:
+            self.f_x = self.tanh_activation()
+        if self.activation == 4:
+            self.f_x = self.relu_activation()
+        if self.activation == 5:
+            self.f_x = self.leaky_relu_activation()
+        if self.activation == 6:
+            self.f_x = self.silu_activation()
+        if self.activation == 7:
+            self.f_x = self.softmax_activation()
+        
         
     def linear_activation(self):
         '''
@@ -48,7 +66,7 @@ class activation_function():
         f_x = np.array(activated_value)
         return f_x
     
-    def binary_activation(self, d_p):
+    def binary_activation(self):
         '''
         This function will return the binary activation values of the input data
         
@@ -63,7 +81,7 @@ class activation_function():
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
             instance_array = np.array(self.data[i])
-            if np.sum(np.multiply(instance_array, self.params)) < d_p:
+            if np.sum(np.multiply(instance_array, self.params)) < self.divide_point:
                 activated_value.append(0)
             else:
                 activated_value.append(1)
@@ -93,7 +111,7 @@ class activation_function():
         f_x = np.array(activated_value)
         return f_x
         
-    def tanh_activation(self, d_p):
+    def tanh_activation(self):
         '''
         This function will return the tanh activation values of the input data
         
@@ -212,23 +230,4 @@ class activation_function():
         exp_value_array = np.array(exp_param_value)
         f_x = exp_value_array/sum_value
         return f_x
-        
-        
-    if __name__ == "__main__":
-        if activation == 0:
-            f_x = linear_activation()
-        if activation == 1:
-            f_x = binary_activation(divide_point)
-        if activation == 2:
-            f_x = sigmoid_activation()
-        if activation == 3:
-            f_x = tanh_activation()
-        if activation == 4:
-            f_x = relu_activation()
-        if activation == 5:
-            f_x = leaky_relu_activation()
-        if activation == 6:
-            f_x = silu_activation()
-        if activation == 7:
-            f_x = softmax_activation()
         

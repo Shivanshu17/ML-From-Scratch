@@ -1,4 +1,4 @@
-from grad_loss import *
+import grad_loss
 import numpy as np
 import pandas as pd
 class Adam():
@@ -79,4 +79,4 @@ class Adam():
     
     if __name__ == "__main__":
         params = adam()
-        return params
+        return params # Still have to figure out if I want to keep the main function or do the tasks in __init__ just like I did in grad_activation.py
