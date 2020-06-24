@@ -2,7 +2,7 @@ from grad_loss import *
 import numpy as np
 import pandas as pd
 class Adam():
-    def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.01):
+    def __init__(self, params, data, lr = 0.1, epoch = 50, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, b1 = 0.9, b2= 0.99, quantile = 0):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
@@ -30,10 +30,13 @@ class Adam():
         self.ep = ep
         self.activation = activation
         self.huber_point = huber_point
-        defaults = dict(lr = lr, cost = cost, epoch = epoch)
+        self.b1 = b1
+        self.b2 = b2
+        self.quantile = quantile
+        #defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adam(self, b1 = 0.9, b2= 0.99):
+    def adam(self):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.
@@ -46,17 +49,19 @@ class Adam():
         '''
         gradient = 0
         v = 0
-        m = grad_loss(self.cost, self.data, self.params, self.activation)
+        g1_obj = grad_loss(self.cost, self.data, self.params, self.activation)
+        m = g1_obj.gradient
         for i in range(self.epochs):
-            gradient = grad_loss(self.cost, self.data, self.params, self.activation)
-            m = b1 * m + (1-b1)* gradient
-            v = b2 * v + (1-b2)*squared_grad(gradient)
+            g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)
+            gradient = g_obj.gradient
+            m = self.b1 * m + (1-self.b1)* gradient
+            v = self.b2 * v + (1-self.b2)*self.squared_grad(gradient)
             val = np.sqrt(v + self.ep)
             for i in range(len(self.params)):
                 self.params[i] = self.params[i] - ((self.lr/val[i])*m[i])
         return self.params
     
-    def squared_grad(gradient):
+    def squared_grad(self, gradient):
         
         '''     
         This function returns the squared values of each gradient

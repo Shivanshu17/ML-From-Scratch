@@ -3,7 +3,7 @@ from grad_loss import *
 import numpy as np
 import pandas as pd
 class SGD():
-    def __init__(self, params, lr = 0.1, nesterov = False, momentum = 0, epoch = 50, data, cost = 0):
+    def __init__(self, params, data, activation = 0, lr = 0.1, nesterov = False, momentum = 0, epoch = 50, cost = 0, huber_point = 0.0, quantile = 0):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
@@ -19,12 +19,11 @@ class SGD():
             raise ValueError("Invalid Learning Rate")
         if momentum < 0:
             raise ValueError("Invalid momentum value")
-        if weight_decay < 0:
-            raise ValueError("Invalid weight decay value")
         if epoch < 1:
             raise ValueError("Invalid epoch value")
         if cost<0 or cost >4:
             raise ValueError("Invalid cost value, it should be between 0 and 4")
+        self.activation = activation
         self.params = params
         self.lr = lr
         self.nesterov = nesterov
@@ -32,7 +31,9 @@ class SGD():
         self.epoch = epoch
         self.data = data
         self.cost = cost
-        defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
+        self.huber_point = self.huber_point
+        self.quantile = quantile
+        #defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
         
         
     def sgd(self):
@@ -47,9 +48,11 @@ class SGD():
         for i in range(self.epoch):
             if self.nesterov == True:
                 future_params = self.params - (self.momentum*momentum_term)
-                gradient = grad_loss(self.cost, self.data, future_params)
+                g_obj = grad_loss(cost = self.cost, data = self.data, params = future_params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
+                gradient = g_obj.gradient
             else:
-                gradient = grad_loss(self.cost, self.data, self.params)
+                g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
+                gradient = g_obj.gradient
             momentum_term = (self.momentum * momentum_term)  + (self.lr*gradient)
             self.params = self.params - momentum_term
         return self.params

@@ -25,6 +25,8 @@ class grad():
             5  -  Leaky ReLU Activation
             6  -  SiLU Activation
             7  -  Softmax Function
+        h_p (float) -> Represents the huber point (for grad_huber)
+        q (float) -> Represent the quantile value for quantile loss function.
                 
     Returns:
         gradient -> Numpy array containing the gradients of all the parameters.
@@ -38,6 +40,16 @@ class grad():
         self.activation = activation
         self.h_p = h_p
         self.q = q
+        if self.cost == 0:
+            self.gradient = self.grad_mse()
+        if self.cost == 1:
+            self.gradient = self.grad_mae()
+        if self.cost == 2:
+            self.gradient = self.grad_huber()
+        if self.cost == 3:
+            self.gradient = self.grad_log_cosh()
+        if self.cost == 4:
+            self.gradient = self.grad_quantile()
         
     def grad_mse(self):
         '''
@@ -54,12 +66,12 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
         '''
         output = self.data.output #Or this line could be data.iloc[:,-1]
-        f_x = activation_function(self.data, self.params, self.activation)
-       
+        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(self.params)):
-            g_activation = grad_activation(self.data, self.activation, self.params, i)
+            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
             param_grad.append((np.sum(np.multiply((f_x - output),  g_activation)))/(2*number_of_instance))
         gradient = np.array(param_grad)
         return gradient
@@ -80,11 +92,12 @@ class grad():
             
         '''
         output = self.data.output  #Or this line could be data.iloc[:,-1]
-        f_x = activation_function(self.data, self.params, self.activation)
+        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
         for i in range(len(self.params)):
-            g_activation = grad_activation(self.data, self.activation, self.params, i)
+            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = i)
             param_grad.append(np.sum(g_activation))
         gradient = np.array(param_grad)
         return gradient
@@ -100,11 +113,12 @@ class grad():
         
         '''
         output = self.data.output  #Or this line could be self.data.iloc[:,-1]
-        f_x = activation_function(self.data, self.params, self.activation)
+        act_f = activation_function(sdata = self.data, params = self.params, activation = self.activation)
+        f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(self.data, self.activation, self.params, j)
+            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
             instance_update = 0
             for i in range(number_of_instances):
                 if (f_x[i] - y[i] <= self.h_p):
@@ -125,18 +139,19 @@ class grad():
         
         '''
         output = self.data.output  #Or this line could be self.data.iloc[:,-1]
-        f_x = activation_function(self.data, self.params, self.activation)
+        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        f_x = act_f.f_x
         param_grad = []
         number_of_instances = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(self.data, self.activation, self.params, j)
+            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
             grad_value = np.multiply((1/np.cosh(output - f_x)), np.sinh(output - f_x))
             param_grad.append(np.sum(np.multiply(grad_value, g_activation)))
         gradient = np.array(param_grad)
         return gradient
     
     
-    def quantile_loss(self):
+    def grad_quantile(self):
         '''
         This function returns the gradient derived with a quantile cost function.
         
@@ -146,11 +161,12 @@ class grad():
         
         '''
         output = self.data.output #Or this line could be self.data.iloc[:,-1]
-        f_x = activation_function(self.data, self.params, self.activation)
+        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        f_x = act_f.f_x
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)
         for j in range(len(self.params)):
-            g_activation = grad_activation(self.data, self.activation, self.params, j)
+            g_activation = grad_activation(data = self.data, activation = self.activation, params = self.params, i = j)
             instance_update = 0
             for i in range(number_of_instance):
                 if output[i] <= f_x[i]:
@@ -161,6 +177,7 @@ class grad():
         gradient = np.array(param_grad)
         return gradient
     
+    '''   
     if __name__ == "__main__":
         if self.cost == 0:
             gradient = grad_mse()
@@ -173,3 +190,4 @@ class grad():
         if self.cost == 4:
             gradient = grad_quantile()
         return gradient
+    '''
