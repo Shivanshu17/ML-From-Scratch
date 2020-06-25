@@ -65,7 +65,7 @@ class grad():
         returns:
             gradient (iterable) -> Gradient of the cost function.
         '''
-        output = self.data.output #Or this line could be data.iloc[:,-1]
+        output = self.data.iloc[:, -1] #Or this line could be data.iloc[:,-1]
         act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
@@ -92,7 +92,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
             
         '''
-        output = self.data.output  #Or this line could be data.iloc[:,-1]
+        output = self.data.iloc[:, -1]  #Or this line could be data.iloc[:,-1]
         act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
@@ -114,7 +114,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
         
         '''
-        output = self.data.output  #Or this line could be self.data.iloc[:,-1]
+        output = self.data.iloc[:, -1]  #Or this line could be self.data.iloc[:,-1]
         act_f = activation_function(sdata = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
@@ -141,7 +141,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost funciton.
         
         '''
-        output = self.data.output  #Or this line could be self.data.iloc[:,-1]
+        output = self.data.iloc[:, -1]  #Or this line could be self.data.iloc[:,-1]
         act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
@@ -164,7 +164,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost function
         
         '''
-        output = self.data.output #Or this line could be self.data.iloc[:,-1]
+        output = self.data.iloc[:, -1] #Or this line could be self.data.iloc[:,-1]
         act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.

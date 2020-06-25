@@ -56,12 +56,12 @@ class activation_function():
             
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         if len(self.params)!= no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             activated_value.append(np.sum(np.multiply(instance_array, self.params)))
         f_x = np.array(activated_value)
         return f_x
@@ -75,12 +75,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             if np.sum(np.multiply(instance_array, self.params)) < self.divide_point:
                 activated_value.append(0)
             else:
@@ -99,12 +99,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             activated_value.append((1/(1+exp_param_value)))
@@ -120,12 +120,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) -1 
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             neg_exp = math.exp(-1*param_value)
@@ -143,12 +143,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) -1 
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             if param_value>0:
                 activated_value.append(param_value)
@@ -167,12 +167,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             if param_value>0:
                 activated_value.append(param_value)
@@ -192,12 +192,12 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             activated_value.append(param_value*(1/(1+exp_param_value)))
@@ -215,14 +215,14 @@ class activation_function():
         
         '''
         no_of_instance = len(self.data)
-        no_of_cols = len(self.data.columns)
+        no_of_cols = len(self.data.columns) - 1
         activated_value = []
         exp_value = []
         sum_value = 0
         if len(self.params) != no_of_cols:
             raise ValueError("The number of parameters should be equal to the number of columns")
         for i in range(no_of_instance):
-            instance_array = np.array(self.data[i])
+            instance_array = np.array(self.data.iloc[i, :-1])
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             exp_value.append(exp_param_value)
