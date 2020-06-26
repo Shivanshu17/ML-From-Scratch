@@ -58,4 +58,4 @@ class SGD():
             
     if __name__ == "__main__":
         params = sgd()
-        return params
+        return params #still have to solve this bug in all optimization approaches. I could either put this part in main(argv) function or put it in __init__ constructor

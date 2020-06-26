@@ -87,11 +87,9 @@ class LinearRegression():
                 mapped_array.append(list_to_append)
             self.mapped_data = pd.DataFrame(mapped_array)
             self.mapped_data = pd.concat([self.mapped_data, output_frame], axis = 1)
-        if self.basis == 2:
+        #if self.basis == 2:
             #Still have to figure out this part
             
-
-
         
     def set_test_basis(data, basis, order = 1):
         '''
@@ -105,8 +103,8 @@ class LinearRegression():
         '''
         if basis == 0:
             mapped_data = data.copy()
-        if self.basis == 1:
-            if self.polynomial_basis_order <= 1:
+        if basis == 1:
+            if order <= 1:
                 raise ValueError("Order of polynomial basis should be more than one")
             mapped_array = []
             num_instance = len(data)
@@ -115,11 +113,11 @@ class LinearRegression():
                 data_row = data.iloc[i,:]
                 for j in range(len(data_row.columns)):
                     data_element = data.iloc[i,j]
-                    for k in range(1, self.polynomial_basis_order):
+                    for k in range(1, order):
                         list_to_append.append(data_element**k)
                 mapped_array.append(list_to_append)
             mapped_data = pd.DataFrame(mapped_array)
-        if basis == 2:
+        #if basis == 2:
             #Still have to figure out this part
             
         
