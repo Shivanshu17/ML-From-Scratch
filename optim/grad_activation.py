@@ -23,7 +23,7 @@ class grad_activation():
     
     
     '''    
-    def __init__(self, data, params, activation = 0, i):
+    def __init__(self, data, params, i, activation = 0):
         self.data = data
         self.params = params
         self.activation = activation
@@ -131,8 +131,8 @@ class grad_activation():
             instance_array = np.array(self.data[i])
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
-            activated_value.append(param_value*((1+ (2*exp_param_value)/((1+exp_param_value)*(1+exp_param_value))))
-        g_activation = np.multiply(np.array(activation_value), i_col)
+            activated_value.append(param_value*((1+ (2*exp_param_value)/((1+exp_param_value)*(1+exp_param_value)))))
+        g_activation = np.multiply(np.array(activated_value), i_col)
         return g_activation
     
 '''    

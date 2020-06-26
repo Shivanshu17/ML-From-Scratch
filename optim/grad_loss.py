@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-from functools import reduce
+# from functools import reduce
 import grad_activation
-import activation_function
+import activation_function as af
 class grad():
     '''
     This class will produce the gradients of the cost functions in reference to the data provided.
@@ -66,7 +66,7 @@ class grad():
             gradient (iterable) -> Gradient of the cost function.
         '''
         output = self.data.iloc[:, -1] #Or this line could be data.iloc[:,-1]
-        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        act_f = af.Activation_Function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
@@ -93,7 +93,7 @@ class grad():
             
         '''
         output = self.data.iloc[:, -1]  #Or this line could be data.iloc[:,-1]
-        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        act_f = af.Activation_Function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
@@ -115,7 +115,7 @@ class grad():
         
         '''
         output = self.data.iloc[:, -1]  #Or this line could be self.data.iloc[:,-1]
-        act_f = activation_function(sdata = self.data, params = self.params, activation = self.activation)
+        act_f = af.Activation_Function(sdata = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
         number_of_instance = len(output)
@@ -142,7 +142,7 @@ class grad():
         
         '''
         output = self.data.iloc[:, -1]  #Or this line could be self.data.iloc[:,-1]
-        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        act_f = af.Activation_Function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []
         number_of_instances = len(output)
@@ -165,7 +165,7 @@ class grad():
         
         '''
         output = self.data.iloc[:, -1] #Or this line could be self.data.iloc[:,-1]
-        act_f = activation_function(data = self.data, params = self.params, activation = self.activation)
+        act_f = af.Activation_Function(data = self.data, params = self.params, activation = self.activation)
         f_x = act_f.f_x
         param_grad = []         #To store the parameter gradient values which are later converted into a numpy array.
         number_of_instance = len(output)

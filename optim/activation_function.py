@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
-class activation_function():
+class Activation_Function():
     ''' 
     This class will produce activations of the input data
     

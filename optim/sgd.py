@@ -47,7 +47,7 @@ class SGD():
         for i in range(self.epoch):
             if self.nesterov == True:
                 future_params = self.params - (self.momentum*momentum_term)
-                g_obj = grad_loss(cost = self.cost, data = self.data, params = future_params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
+                g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = future_params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
                 gradient = g_obj.gradient
             else:
                 g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point, q = self.quantile)

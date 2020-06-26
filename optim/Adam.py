@@ -1,7 +1,7 @@
 import grad_loss
 import numpy as np
 import pandas as pd
-class Adam():
+class ADAM():
     def __init__(self, params, data, lr = 0.1, epoch = 50, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, b1 = 0.9, b2= 0.99, quantile = 0):
         '''
         The following costs imply the following loss functions:
@@ -52,7 +52,7 @@ class Adam():
         g1_obj = grad_loss(self.cost, self.data, self.params, self.activation)
         m = g1_obj.gradient
         for i in range(self.epochs):
-            g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)
+            g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)
             gradient = g_obj.gradient
             m = self.b1 * m + (1-self.b1)* gradient
             v = self.b2 * v + (1-self.b2)*self.squared_grad(gradient)

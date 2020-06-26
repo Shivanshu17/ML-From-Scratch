@@ -1,7 +1,7 @@
 import grad_loss
 import numpy as np
 import pandas as pd
-class Adagrad():
+class ADAGRAD():
     def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, quantile = 0):
         '''
         The following costs imply the following loss functions:
@@ -48,7 +48,7 @@ class Adagrad():
         gradient = 0
         sum_squared_gradient = 0
         for i in range(self.epoch):
-            g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation  = self.activation, h_p = self.huber_point,  q = self.quantile)
+            g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = self.params, activation  = self.activation, h_p = self.huber_point,  q = self.quantile)
             gradient = g_obj.gradient
             sum_squared_gradient = sum_squared_gradient + self.squared_grad(gradient)
             val = np.sqrt(sum_squared_gradient + self.ep)

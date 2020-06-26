@@ -1,7 +1,15 @@
 # This will be the implementation of Linear Regression from Scatch 
+import sys
+sys.path.append('/home/epoch/Shivanshu/Git-Projects/ML-From-Scratch/optim')
+# The following files will be imported from the path appended above
+import loss_functions as lf
+import sgd
+import Adagrad
+import Adadelta
+import Adam
+
 import pandas as pd
 import numpy as np
-import loss_functions #This needs to be modified according to directory structure and how to handle it from within python code.
 
 class LinearRegression():
     def __init__(self, data, epoch = 20, lr = 0.8, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, q = 0.7, alpha = 0.9, b1 = 0.9, b2 = 0.99, h_p = 0.9):
@@ -141,13 +149,13 @@ class LinearRegression():
         '''
         self.set_params()
         if self.optimization == 0:
-            self.params = sgd(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost )
+            self.params = sgd.SGD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, huber_point = self.h_p, quantile = self.q )
         if self.optimization == 1:
-            self.params = Adagrad(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep)
+            self.params = Adagrad.ADAGRAD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, huber_point = self.h_p, quantile = self.q)
         if self.optimization == 2:
-            self.params = Adadelta(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, alpha = self.alpha, ep = self.ep)
+            self.params = Adadelta.ADADELTA(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, alpha = self.alpha, ep = self.ep, huber_point = self.h_p, quantile = self.q)
         if self.optimization == 3:
-            self.params = Adagrad(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, b1 = self.b1, b2 = self.b2)
+            self.params = Adam.ADAM(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, b1 = self.b1, b2 = self.b2, huber_point = self.h_p, quantile = self.q)
         
     def predict(self, test_data):
         '''
@@ -182,15 +190,15 @@ class LinearRegression():
         
         '''
         if self.cost == 0:
-            self.loss = mean_squared_loss(y = test_y, pred_y = self.predictions)
+            self.loss = lf.mean_squared_loss(y = test_y, pred_y = self.predictions)
         if self.cost == 1:
-            self.loss = mean_absolute_loss(y = test_y, pred_y = self.predictions)
+            self.loss = lf.mean_absolute_loss(y = test_y, pred_y = self.predictions)
         if self.cost == 2:
-            self.loss = huber_loss(y = test_y, pred_y = self.predictions, t = self.h_p)
+            self.loss = lf.huber_loss(y = test_y, pred_y = self.predictions, t = self.h_p)
         if self.cost == 3:
-            self.loss = log_cosh_loss(y = test_y, pred_y = self.predictions)
+            self.loss = lf.log_cosh_loss(y = test_y, pred_y = self.predictions)
         if self.cost == 4:
-            self.loss = quantile_loss(y = test_y, pred_y = self.predictions, q = self.q)
+            self.loss = lf.quantile_loss(y = test_y, pred_y = self.predictions, q = self.q)
         
         
     

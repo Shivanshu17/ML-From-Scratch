@@ -1,7 +1,7 @@
 import grad_loss
 import numpy as np
 import pandas as pd
-class Adadelta():
+class ADADELTA():
     def __init__(self, params,  data, lr = 0.1, epoch = 50, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, alpha = 0.9, quantile = 0):
         '''
         The following costs imply the following loss functions:
@@ -49,7 +49,7 @@ class Adadelta():
         gradient = 0
         sum_squared_gradient = 0
         for i in range(self.epoch):
-            g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)
+            g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)
             gradient = g_obj.gradient
             sum_squared_gradient = self.alpha * sum_squared_gradient + (1-self.alpha) * self.squared_grad(gradient)
             val = np.sqrt(sum_squared_gradient + self.ep)
