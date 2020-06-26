@@ -1,16 +1,19 @@
 # This will be the implementation of Linear Regression from Scatch 
 import pandas as pd
 import numpy as np
+import loss_functions #This needs to be modified according to directory structure and how to handle it from within python code.
 
 class LinearRegression():
-    def __init__(self, data, epoch = 20, lr = 0.8, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, alpha = 0.9, b1 = 0.9, b2 = 0.99):
+    def __init__(self, data, epoch = 20, lr = 0.8, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, q = 0.7, alpha = 0.9, b1 = 0.9, b2 = 0.99, h_p = 0.9):
         '''
         This class object will fit a linear regression model to the given data according to the prescribed basis & regularization
         We are gonna assume that the data being fed has been normalized already, and I am not gonna implement regularization for now
         Args:
-            data (DataFrame) -> Original dataframe; this might be adjusted during the set_basis stage.
+            data (DataFrame) -> Original dataframe; this might be adjusted during the set_basis stage. Also, it has the output values in the last column.
             epochs (int) -> Defines the number of epochs the user wants to train this data for.
             lr (float) -> Determines the learning rate of the algorithm
+            q (float) -> Represents the quantile loss function for when quantile cost function is used.
+            h_p (float) -> Huber point for huber loss function
             cost (int) -> Defines the loss function as follows:
                 0 - Mean Squared Error
                 1 - Mean Absolute Error
@@ -32,6 +35,7 @@ class LinearRegression():
         Returns:
             predictions (iterable) -> predict function returns the set of predictions for the trained model
             params (iterable) -> get_params() function returns the parameters (either before or after the training)
+            score (float) -> Defines the loss score on the test set
             
         
         '''
@@ -48,6 +52,8 @@ class LinearRegression():
         self.alpha = alpha
         self.b1 = b1
         self.b2 = b2
+        self.h_p = h_p
+        self.q = q
             
     def set_basis(self):
         '''
@@ -145,7 +151,11 @@ class LinearRegression():
         
     def predict(self, test_data):
         '''
-        This function has to call the score function as well
+        This function produces the list of predictions from the trained model, given the test_data
+        Args:
+            test_data (DataFrame) -> The test data for the trained model (without the output values in the last column)
+        Returns:
+            predictions (Iterable) -> Predictions on test set
         
         '''
         mapped_test_data = set_test_basis(test_data, basis = self.basis, order = self.polynomial_basis_order)
@@ -163,14 +173,24 @@ class LinearRegression():
         return self.params
         
              
-    def score(self):
+    def score(self, test_y):
         '''
         This function will be used at two points - first it will be used to predict the score of the training data
         And then to predict the score of validation data (or test_data)
+        Args:
+            test_y (iterable) -> Containing the actual output values of the test set.
         
         '''
         if self.cost == 0:
-        
+            self.loss = mean_squared_loss(y = test_y, pred_y = self.predictions)
+        if self.cost == 1:
+            self.loss = mean_absolute_loss(y = test_y, pred_y = self.predictions)
+        if self.cost == 2:
+            self.loss = huber_loss(y = test_y, pred_y = self.predictions, t = self.h_p)
+        if self.cost == 3:
+            self.loss = log_cosh_loss(y = test_y, pred_y = self.predictions)
+        if self.cost == 4:
+            self.loss = quantile_loss(y = test_y, pred_y = self.predictions, q = self.q)
         
         
     
