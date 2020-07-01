@@ -33,6 +33,7 @@ class ADAM():
         self.b1 = b1
         self.b2 = b2
         self.quantile = quantile
+        self.updated_params = self.adam()
         #defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
@@ -77,6 +78,8 @@ class ADAM():
         squared_gradient = np.multiply(gradient, gradient2)
         return squared_gradient
     
+    '''
     if __name__ == "__main__":
         params = adam()
         return params # Still have to figure out if I want to keep the main function or do the tasks in __init__ just like I did in grad_activation.py
+    '''

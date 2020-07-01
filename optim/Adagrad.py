@@ -2,7 +2,7 @@ import grad_loss
 import numpy as np
 import pandas as pd
 class ADAGRAD():
-    def __init__(self, params, lr = 0.1, epoch = 50, data, cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, quantile = 0):
+    def __init__(self, params, data, lr = 0.1, epoch = 50,  cost = 0, ep = 1e-8, activation = 0, huber_point = 0.0, quantile = 0):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
@@ -31,6 +31,7 @@ class ADAGRAD():
         self.ep = ep
         self.huber_point = huber_point
         self.quantile = quantile
+        self.updated_params = self.adagrad()
         # defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
@@ -72,6 +73,8 @@ class ADAGRAD():
         squared_gradient = np.multiply(gradient, gradient2)
         return squared_gradient
     
+    '''
     if __name__ == "__main__":
         params = adagrad()
         return params
+    '''

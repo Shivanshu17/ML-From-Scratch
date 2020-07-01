@@ -91,7 +91,7 @@ class LinearRegression():
             #Still have to figure out this part
             
         
-    def set_test_basis(data, basis, order = 1):
+    def set_test_basis(self, data, basis, order = 1):
         '''
         This function sets the basis of the linear regression model and updates the data accordingly.
         Args:
@@ -147,14 +147,18 @@ class LinearRegression():
         '''
         self.set_params()
         if self.optimization == 0:
-            self.params = sgd.SGD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, huber_point = self.h_p, quantile = self.q )
+            sgd_optim = sgd.SGD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, huber_point = self.h_p, quantile = self.q )
+            self.params = sgd_optim.updated_params
         if self.optimization == 1:
-            self.params = Adagrad.ADAGRAD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, huber_point = self.h_p, quantile = self.q)
+            Adagrad_optim = Adagrad.ADAGRAD(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, huber_point = self.h_p, quantile = self.q)
+            self.params = Adagrad_optim.updated_params
         if self.optimization == 2:
-            self.params = Adadelta.ADADELTA(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, alpha = self.alpha, ep = self.ep, huber_point = self.h_p, quantile = self.q)
+            Adadelta_optim = Adadelta.ADADELTA(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, alpha = self.alpha, ep = self.ep, huber_point = self.h_p, quantile = self.q)
+            self.params = Adadelta_optim.updated_params
         if self.optimization == 3:
-            self.params = Adam.ADAM(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, b1 = self.b1, b2 = self.b2, huber_point = self.h_p, quantile = self.q)
-        
+            Adam_optim = Adam.ADAM(params = self.params, data = self.mapped_data, epoch = self.epoch, lr = self.lr, activation = 0, cost = self.cost, ep = self.ep, b1 = self.b1, b2 = self.b2, huber_point = self.h_p, quantile = self.q)
+            self.params = Adam_optim.updated_params
+            
     def predict(self, test_data):
         '''
         This function produces the list of predictions from the trained model, given the test_data
@@ -164,7 +168,7 @@ class LinearRegression():
             predictions (Iterable) -> Predictions on test set
         
         '''
-        mapped_test_data = set_test_basis(test_data, basis = self.basis, order = self.polynomial_basis_order)
+        mapped_test_data = self.set_test_basis(test_data, basis = self.basis, order = self.polynomial_basis_order)
         no_of_instance = len(mapped_test_data)
         predicted_list = []
         for i in range(no_of_instance):

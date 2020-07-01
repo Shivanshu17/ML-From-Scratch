@@ -1,3 +1,10 @@
+import sys
+sys.path.append('/home/epoch/Shivanshu/Git-Projects/ML-From-Scratch/optim')
+# The following files will be imported from the path appended above
+import loss_functions as lf
+import Adagrad
+import Adadelta
+import Adam
 import grad_loss
 import numpy as np
 import pandas as pd
@@ -30,12 +37,13 @@ class SGD():
         self.epoch = epoch
         self.data = data
         self.cost = cost
-        self.huber_point = self.huber_point
+        self.huber_point = huber_point
         self.quantile = quantile
+        self.updated_params = self.Sgd()
         #defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
         
         
-    def sgd(self):
+    def Sgd(self):
         '''
         This function calculates the optimized values of parameters by employing stochastic gradient descent.
         It checks whether or not the user wants nesterov acceleration component to be used.
@@ -50,12 +58,15 @@ class SGD():
                 g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = future_params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
                 gradient = g_obj.gradient
             else:
-                g_obj = grad_loss(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
+                g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point, q = self.quantile)
                 gradient = g_obj.gradient
             momentum_term = (self.momentum * momentum_term)  + (self.lr*gradient)
             self.params = self.params - momentum_term
         return self.params
             
+    '''
     if __name__ == "__main__":
         params = sgd()
         return params #still have to solve this bug in all optimization approaches. I could either put this part in main(argv) function or put it in __init__ constructor
+        
+    '''

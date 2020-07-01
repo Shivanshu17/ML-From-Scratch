@@ -32,6 +32,7 @@ class ADADELTA():
         self.huber_point = huber_point
         self.alpha = alpha
         self.quantile = quantile
+        self.updated_params = self.adadelta()
         # defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
@@ -72,7 +73,9 @@ class ADADELTA():
         gradient2 = np.copy(gradient)
         squared_gradient = np.multiply(gradient, gradient2)
         return squared_gradient
-    
+   
+    '''
     if __name__ == "__main__":
         params = adadelta()
         return params
+    '''
