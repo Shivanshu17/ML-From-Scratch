@@ -68,7 +68,7 @@ class grad_activation():
             param_value = np.sum(np.multiply(instance_array, self.params))
             exp_param_value = math.exp(param_value)
             activated_value.append((1/(1+exp_param_value)*(1+exp_param_value))*exp_param_value)
-        g_activation = np.multiply(np.array(activation_value), i_col)
+        g_activation = np.multiply(np.array(activated_value), i_col)
         return g_activation
     
     def tanh_grad(self):
@@ -84,7 +84,7 @@ class grad_activation():
             exp_param_value = math.exp(param_value)
             square_exp_value = math.exp(2*param_value)
             activated_value.append((1/(1+exp_param_value)*(1+exp_param_value))*2*square_exp_value)
-        g_activation = np.multiply(np.array(activation_value), i_col)
+        g_activation = np.multiply(np.array(activated_value), i_col)
         return g_activation
     
     def relu_grad(self):
