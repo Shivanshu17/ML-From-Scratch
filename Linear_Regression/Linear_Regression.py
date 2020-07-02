@@ -11,7 +11,7 @@ import Adam
 import pandas as pd
 import numpy as np
 
-class LinearRegression():
+class LinearRegressionClass():
     def __init__(self, data, epoch = 20, lr = 0.8, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, q = 0.7, alpha = 0.9, b1 = 0.9, b2 = 0.99, h_p = 0.9):
         '''
         This class object will fit a linear regression model to the given data according to the prescribed basis & regularization

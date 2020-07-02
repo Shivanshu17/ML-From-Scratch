@@ -39,11 +39,11 @@ class SGD():
         self.cost = cost
         self.huber_point = huber_point
         self.quantile = quantile
-        self.updated_params = self.Sgd()
+        self.updated_params = self.Stochastic_Gradient_Descent()
         #defaults = dict(lr = lr, nesterov = nesterov, momentum = momentum, weight_decay = weight_decay, cost = cost, epoch = epoch)
         
         
-    def Sgd(self):
+    def Stochastic_Gradient_Descent(self):
         '''
         This function calculates the optimized values of parameters by employing stochastic gradient descent.
         It checks whether or not the user wants nesterov acceleration component to be used.

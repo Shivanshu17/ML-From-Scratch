@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
-class grad_activation():
+class GRAD_ACTIVATE():
     ''' 
     This class will produce gradients of the activations of the input data
     
@@ -29,21 +29,21 @@ class grad_activation():
         self.activation = activation
         self.i = i
         if self.activation == 0:
-            self.g_activation = self.linear_grad()
+            self.g_activation_array = self.linear_grad()
         if self.activation == 1:
-            self.g_activation = self.binary_grad()
+            self.g_activation_array = self.binary_grad()
         if self.activation == 2:
-            self.g_activation = self.sigmoid_grad()
+            self.g_activation_array = self.sigmoid_grad()
         if self.activation == 3:
-            self.g_activation = self.tanh_grad()
+            self.g_activation_array = self.tanh_grad()
         if self.activation == 4:
-            self.g_activation = self.relu_grad()
+            self.g_activation_array = self.relu_grad()
         if self.activation == 5:
-            self.g_activation = self.leaky_relu_grad()
+            self.g_activation_array = self.leaky_relu_grad()
         if self.activation == 6:
-            self.g_activation = self.silu_grad()
+            self.g_activation_array = self.silu_grad()
         if self.activation ==7:
-            self.g_activation = self.softmax_grad()
+            self.g_activation_array = self.softmax_grad()
     
     def linear_grad(self):
         i_col = self.data.iloc[:, self.i]

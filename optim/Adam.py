@@ -33,11 +33,11 @@ class ADAM():
         self.b1 = b1
         self.b2 = b2
         self.quantile = quantile
-        self.updated_params = self.adam()
+        self.updated_params = self.adam_optimization()
         #defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adam(self):
+    def adam_optimization(self):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.

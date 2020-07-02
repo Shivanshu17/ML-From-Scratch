@@ -32,11 +32,11 @@ class ADADELTA():
         self.huber_point = huber_point
         self.alpha = alpha
         self.quantile = quantile
-        self.updated_params = self.adadelta()
+        self.updated_params = self.adadelta_optimization()
         # defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adadelta(self):
+    def adadelta_optmization(self):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.

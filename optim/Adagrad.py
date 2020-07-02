@@ -31,11 +31,11 @@ class ADAGRAD():
         self.ep = ep
         self.huber_point = huber_point
         self.quantile = quantile
-        self.updated_params = self.adagrad()
+        self.updated_params = self.adagrad_optimization()
         # defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adagrad(self):
+    def adagrad_optimization(self):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.
