@@ -50,7 +50,7 @@ class ADAM():
         '''
         gradient = 0
         v = 0
-        g1_obj = grad_loss(self.cost, self.data, self.params, self.activation)
+        g1_obj = grad_loss.grad(self.cost, self.data, self.params, self.activation)
         m = g1_obj.gradient
         for i in range(self.epochs):
             g_obj = grad_loss.grad(cost = self.cost, data = self.data, params = self.params, activation = self.activation, h_p = self.huber_point,  q = self.quantile)

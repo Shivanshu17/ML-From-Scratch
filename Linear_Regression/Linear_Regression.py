@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 class LinearRegressionClass():
-    def __init__(self, data, epoch = 20, lr = 0.8, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, q = 0.7, alpha = 0.9, b1 = 0.9, b2 = 0.99, h_p = 0.9):
+    def __init__(self, data, epoch = 50, lr = 0.01, cost = 0, basis = 0, polynomial_basis_order = 1, optimization = 0, ep = 1e-8, q = 0.7, alpha = 0.9, b1 = 0.9, b2 = 0.99, h_p = 0.9):
         '''
         This class object will fit a linear regression model to the given data according to the prescribed basis & regularization
         We are gonna assume that the data being fed has been normalized already, and I am not gonna implement regularization for now
@@ -134,7 +134,7 @@ class LinearRegressionClass():
         
         '''
         length = len(self.mapped_data.columns) - 1
-        self.params = np.zeros(length, dtype = float)
+        self.params = np.random.rand(length)
                 
         
     def fit(self):

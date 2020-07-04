@@ -73,7 +73,10 @@ class grad():
         for i in range(len(self.params)):
             g_act_obj = grad_activation.GRAD_ACTIVATE(data = self.data, activation = self.activation, params = self.params, i = i)
             g_activation = g_act_obj.g_activation_array
-            param_grad.append((np.sum(np.multiply((f_x - output),  g_activation)))/(2*number_of_instance))
+            instance_update = 0
+            for j in range(number_of_instance):
+                instance_update = instance_update + ((f_x[j] - output[j]) * g_activation[j])
+            param_grad.append(instance_update)
         gradient = np.array(param_grad)
         return gradient
     

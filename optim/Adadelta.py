@@ -36,7 +36,7 @@ class ADADELTA():
         # defaults = dict(lr = lr, cost = cost, epoch = epoch)
     
         
-    def adadelta_optmization(self):
+    def adadelta_optimization(self):
         
         '''
         This function optimizes the paramters using gradient function and performs the action 'epoch' number of times.

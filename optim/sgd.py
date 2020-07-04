@@ -9,7 +9,7 @@ import grad_loss
 import numpy as np
 import pandas as pd
 class SGD():
-    def __init__(self, params, data, activation = 0, lr = 0.1, nesterov = False, momentum = 0, epoch = 50, cost = 0, huber_point = 0.0, quantile = 0):
+    def __init__(self, params, data, activation = 0, lr = 0.1, nesterov = False, momentum = 0.2, epoch = 50, cost = 0, huber_point = 0.0, quantile = 0):
         '''
         The following costs imply the following loss functions:
             0 - Mean Squared Error
