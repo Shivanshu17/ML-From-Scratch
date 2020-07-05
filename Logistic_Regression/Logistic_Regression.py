@@ -1,3 +1,9 @@
+# One thing to keep a note of here. While this implementation of Logistic Regression would work just fine, but I have to keep in mind that it is different 
+# from the linear regression implementation. Becuase while the MSE function will do just fine in calculating the gradient update values, but we didn't reach
+# that point in a conventional MSE manner (as we do in Linear Regression), instead, Logistic Regression reaches that point by differentiation of log-
+# likelihood function that was formed by multiplication of probabilities (probabilities are used for categorical data, can't be done like typical way).
+
+
 import pandas as pd
 import numpy as np
 
