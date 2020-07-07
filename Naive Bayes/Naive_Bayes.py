@@ -8,7 +8,7 @@
 import pandas as pd
 import numpy as np
 
-class CategoricalNB():
+class BinomialNB():
     def __init__(self, data, make_discrete = True):
         '''
         This class wil produce the classification predictions while making the naive assumption that the current probability of x, given an output y,
@@ -27,7 +27,84 @@ class CategoricalNB():
     
     def check_discrete(self):
         '''
-        This function checks whether the given data is discreet or not. It then converts the data into discreet values if it is not (and if make_discrete is True)
+        This function checks whether the given data is discreet or not. It then converts the data into discreet values if it is not already. 
+        Here, since its a Binomial NB, I'll find the mean of the range and then discretize the data based on whether it is smaller or larger than the mean.
+        This is necessary for the simple NB model that I am making. Here, the param values are to be derived using simple algebric expressions.
+        
+        
+        '''
+        for j in range(len(self.data.columns) - 1):
+            if len(self.data.iloc[:, j].unique) != 2:
+                col_mean = np.mean(self.data.iloc[:,j])
+                for i in range(len(self.data.iloc[:, j])):
+                    if self.data.iloc[i,j] > col_mean:
+                        self.data.col.iloc[i,j] = 1
+                    else:
+                        self.data.col.iloc[i,j] = 0
+    
+    
+    
+    def initiate_params(self):
+        '''
+        This function initiates the parameters (based on the number of output values in the given data). 
+        Depending on the value of the distribution variable, the parameters defined might be describing a simple, gaussian, poisson, laplace, etc. distribution
+        So, if make_discrete is false, and distribution != 0, then we will initiate those particular parameters as per the distribution defined.
+        
+        The best way I see to do this is by creating a 2D numpy array, with x values on the x-axis and y values on the y axis.
+        Each element of the array would house the probabilities created using the simple y-values is this "AND" x-value is this.
+        '''
+        x_count = len(self.data.columns) - 1
+        y_count = len(self.data.iloc[:, -1].unique)
+        
+      
+        
+        
+        
+        
+        
+    def calculate_simple_params(self, df):
+        '''
+        This function calculates the parameter values using a simple maximum likelihood definition on the joint likelihood definition of the dataset.
+        It returns phi(j|y=0), phi(j|y = 1), phi(j|y = 2), etc.
+        
+        This function will be called from the function initiate_params()
+        '''
+        
+        
+        
+        
+    def make_predictions(self, test_data):
+        '''
+        This function will take in the test_data, and produce the highest probable class for each instance of data fed.
+        
+        '''
+        
+        
+        
+        
+        
+        
+class MultinomialNB():
+    def __init__(self, data, make_discrete = True):
+        '''
+        This class wil produce the classification predictions while making the naive assumption that the current probability of x, given an output y,
+        does not depend on the earlier values of x or y and only depends on the current value of y. This way, each "cluster" will have its own distribution 
+        of x, independent of the distribution values of other clusters. 
+        
+        
+        '''
+        self.params = None
+        self.data = data
+        self.make_discrete = make_discrete
+        self.is_discrete = None
+        
+        
+        
+    
+    def check_discrete(self):
+        '''
+        This function checks whether the given data is discreet or not. It then converts the data into discreet values if it is not, it will turn the contnuous
+        data to discrete data by interepreting it in multinomial form (with predefined number of bins/ the no. suitable for the given range). 
         This is necessary for the simple NB model that I am making. Here, the param values are to be derived using simple algebric expressions.
         
         
@@ -58,11 +135,22 @@ class CategoricalNB():
         It returns phi(j|y=0), phi(j|y = 1), phi(j|y = 2), etc.
         
         This function will be called from the function all_params()
+        ''' 
+        
+        
+        
+        
+    def make_predictions(self, test_data):
+        '''
+        This function will take in the test_data, and produce the highest probable class for each instance of data fed.
+        
         '''
         
         
         
-    
+        
+        
+        
     
     
         
@@ -101,6 +189,18 @@ class GaussianNB():
         
         
         '''
+        
+        
+        
+        
+    def make_predictions(self, test_data):
+        '''
+        This function will take in the test_data, and produce the highest probable class for each instance of data fed.
+        
+        '''
+        
+        
+        
         
         
         
