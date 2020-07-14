@@ -13,7 +13,8 @@ class CART():
         
         '''
         
-        
+    
+    
     
     def ordinal_permutations(self, ):
         '''
@@ -76,7 +77,21 @@ class CART():
         This function is called from the attribute_selector function (for each attribute). It calculates the information gain of the split according to 
         a particular attribute. This function calls the loss_functions, based on the loss metric prescribed by the user.
         
+        We don't have to calculate the gain ration in CART (because splits are limited to binary splits), but we might need to implement it for C1.6 and others
         '''
+        
+    
+    
+    
+    
+    def assign_class_label(self, ):
+        '''
+        This function would assign the class label to the nodes that have met the "stopping_condition".
+        It will also have to take into consideration various scenarios like when a node might not even have a single instance, etc.
+        
+        
+        '''
+        
         
         
         
@@ -86,6 +101,7 @@ class CART():
         process
         This function is the one that decides how to treat each attribute value as well, ie (continuous, ordinal, or nominal)
         
+        This is like the "find_best_split" function definition of the algorithm defined in the book
         
         '''
         
