@@ -28,13 +28,14 @@ class CART():
         
         '''
         self.all_attributes = self.data.columns[:-1]
+        self.attribute_list = self.data.columns[:-1]
         self.y_count = len(self.data.iloc[:, -1].unique)
         y_keys = list(self.data.iloc[:, -1].unique)
         self.y_dict = {y_keys[i]: y_values[i] for i in range(len(y_keys))}
         self.class_labels = y_keys
         self.level = 0
         self.index = -1
-        updated_level, updated_index = self.fit(df = self.data, attributes = self.all_attributes) # Have to make sure that this funciton definition is correct.
+        updated_level, updated_index = self.fit(df = self.data, self.attribute_list, self.index) # Have to make sure that this funciton definition is correct.
         if updated_level == 0:
             print("Decision Tree training process was successful")
         
