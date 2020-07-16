@@ -16,11 +16,28 @@ class CART():
         
         '''
         self.data = data #It assumes that the data is numeric (even for categorical data, that it has been preprocessed to convert it into form of categories)
-        self.all_attributes = None
-        self.model_params = None
-        self.class_labels = None
         self.cost = cost
         self.max_Depth = max_depth
+        self.model_params = pd.DataFrame(columns = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']) 
+        '''
+        # Attribute_type will store (0, 1, 2, 3) for binomial, nominal, ordinal, and continuous data (or should it? I think it can be done without it, will have to see)
+        # child_index will be a list that contains indexes for all the children of each node. For this CART implementation, each child will house just two values
+        # condition should ideally be a list as well. With [len(child_index) - 1] number of values, but, since in case of CART it is 1, we are gonna just take one condition value in
+        # level would indicate the level of the node in the tree, and this would primarily be used by check_split_criteria() function
+        # If this were C4.5 or other implementation, we would have had to include a 'number_of_split' column as well (For convenience during the inference stage)
+        
+        '''
+        self.all_attributes = self.data.columns[:-1]
+        self.y_count = len(self.data.iloc[:, -1].unique)
+        y_keys = list(self.data.iloc[:, -1].unique)
+        self.y_dict = {y_keys[i]: y_values[i] for i in range(len(y_keys))}
+        self.class_labels = y_keys
+        self.level = 0
+        self.index = -1
+        updated_level, updated_index = self.fit(df = self.data, attributes = self.all_attributes) # Have to make sure that this funciton definition is correct.
+        if updated_level == 0:
+            print("Decision Tree training process was successful")
+        
     
     
     
@@ -107,7 +124,7 @@ class CART():
     
     
     
-    def attribute_class_label(self, ):
+    def node_class_label(self, ):
         '''
         This function would assign the class label to the nodes that have met the "stopping_condition".
         It will also have to take into consideration various scenarios like when a node might not even have a single instance, etc.
@@ -130,7 +147,10 @@ class CART():
         '''
         This is the main function which is iteratively called to decide on the selection of attribute from the remaining set of attributes during the training
         process
-        This function is the one that decides how to treat each attribute value as well, ie (continuous, ordinal, or nominal)
+        This function is the one that decides how to treat each attribute value, ie (continuous, ordinal, or nominal), and then calls the respective function 
+        to get binary splits for the values.
+        
+        With each permutation of each attribute, it calls the function information_gain(), which then in turn calls the gini or entropy based on self.cost
         
         This is like the "find_best_split" function definition of the algorithm defined in the book
         
@@ -171,7 +191,7 @@ class CART():
         
         
     
-    def fit(self, ): # Will have to change the implementation to recursive definition
+    def fit(self, df, attributes): # Will have to change the implementation to recursive definition
         '''
         This is the main training function which trains the DT.
         It creates and implements the primary data structure for housing the DT mdoel.
@@ -179,26 +199,20 @@ class CART():
         It calls the attribute_selector(), at each iteration of data. It will also pass the list of attributes to select from. 
         It recurssively calls itself as it goes deeper and deeper into the tree (this step is optional, and lets see if we can perform this with iteration)
         
-        
+        Args:
+            df (DataFrame) -> Containing the training records (updated at every recurring step)
+            attributes (iterable) -> List containing the remaining attributes
         
         
         '''
-        self.model_params = pd.DataFrame(columns = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']) # Attribute_type will store (0, 1, 2, 3) for binomial, nominal, ordinal, and continuous data
-        self.all_attributes = self.data.columns[:-1]
-        self.y_count = len(self.data.iloc[:, -1].unique)
-        y_keys = list(self.data.iloc[:, -1].unique)
-        self.y_dict = {y_keys[i]: y_values[i] for i in range(len(y_keys))}
-        self.class_labels = y_keys
-        stop_splits = self.check_split_criteria() # Will probably have to pass quite a few details here as arguments, will see later...
-        for i in range(len(self.all_attributes)):
+        
+        stopping_condition = self.check_split_criteria() # Will probably have to pass quite a few details here as arguments, will see later...            
+        if stopping_condition:
+            # Code for assigning class labels
+            # I will conclude the class label and add it to the self.model_params
+            # It will also remove the attribute under consideration from the 'current' list of attributes. On a second thought, it shouldn't be doing this... WIll have to look more into it
+        else:
             
-            if stop_splits:
-                # Code for assigning class labels
-                # I will conclude the class lable and add it to the self.model_params
-                # It will also remove the attribute under consideration from the 'current' list of attributes
-                
-            else:
-                
             
         
         
