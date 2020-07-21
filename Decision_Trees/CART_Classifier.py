@@ -19,6 +19,7 @@ class CART():
         self.cost = cost
         self.max_Depth = max_depth
         self.model_params = pd.DataFrame(columns = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']) 
+        self.model_params['child_index'] = self.model_params['child_index'].astype('object')
         '''
         # Attribute_type will store (0, 1, 2, 3) for binomial, nominal, ordinal, and continuous data (or should it? I think it can be done without it, will have to see)
         # child_index will be a list that contains indexes for all the children of each node. For this CART implementation, each child will house just two values
@@ -33,11 +34,12 @@ class CART():
         y_keys = list(self.data.iloc[:, -1].unique)
         self.y_dict = {y_keys[i]: y_values[i] for i in range(len(y_keys))}
         self.class_labels = y_keys
-        self.level = 0
-        self.index = -1
+        self.level = [0]
+        self.index = [-1]
         updated_level, updated_index = self.fit(df = self.data, self.attribute_list, self.index) # Have to make sure that this funciton definition is correct.
         if updated_level == 0:
             print("Decision Tree training process was successful")
+        
         
     
     
@@ -192,7 +194,7 @@ class CART():
         
         
     
-    def fit(self, df, attributes): # Will have to change the implementation to recursive definition
+    def fit(self, df, attributes): # Will have to see if I have to pass self.index, self.model_params, self.level as well (that will happen if class variables aren't able to hold values across recurssive function calls)
         '''
         This is the main training function which trains the DT.
         It creates and implements the primary data structure for housing the DT mdoel.
@@ -207,19 +209,45 @@ class CART():
         
         '''
         
-        stopping_condition = self.check_split_criteria() # Will probably have to pass quite a few details here as arguments, will see later...            
+        stopping_condition = self.check_split_criteria(df, attributes, self.level, self.index, self.model_params) # Will probably have to pass quite a few details here as arguments, will see later...     
+        self.level[0] = self.level[0] + 1
+        column_names = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']
+        temp_param = pd.DataFrame(columns = column_names)
+        temp_param['child_index'] = temp_param['child_index'].astype('object')
+        temp_param['child_index'] = [0, 0] # This would be an array of length equal to the number of splits in C4.5 implementation
         if stopping_condition:
+            temp_param = pd.DataFrame(columns = column_names)
             # Code for assigning class labels
+            temp_param.class_label = node_class_label(df, attributes)
+            temp_param.level = self.level[0]
+            temp_param.attribute_type = 'Leaf'
+            temp_param.parent_index = self.index[0]
+            
             # I will conclude the class label and add it to the self.model_params
-            # It will also remove the attribute under consideration from the 'current' list of attributes. On a second thought, it shouldn't be doing this... WIll have to look more into it
+            self.model_params = pd.concat([self.model_params, temp_param], ignore_index = True)
+            self.leve[0] = self.level[0] - 1
+            self.index[0] = self.index[0] + 1
+            return self.level, self.index
         else:
-            
-            
+            temp_param.condition, temp_param.attribute_name = self.attribute_selector(df, self.attribute_list)
+            temp_param.level = self.level[0]
+            temp_param.attribute_type = 'Root'
+            temp_param.parent_index = self.index[0]
+            self.index[0] = self.index[0] + 1
+            self.model_params = pd.concat([self.model_params, temp_param], ignore_index = True)
+            self.attribute_list = self.attribute_list.drop(temp_param.attribute_name)
+            condition_array = np.array([np.NINF, temp_param.condition, np.INF])
+            attribute_name = temp_param.attribute_name
+            current_index = len(self.model_params) - 1 # This would only work if python stores a variable stack of the caller function during the recurssive call
+            for i in range(2):
+                df_updated = df.loc[(df[attribute_name]> condition_array[i]) & (df[attribute_name] <= condition_array[i+1])]
+                self.level[0], child_index_value = self.fit(df_updated, self.attribute_list)
+                self.model_params.iloc[current_index, child_index[i]] = child_index_value
+            self.attribute_list.append(temp_param.attribute_name)
+            self.level[0] = self.level[0] - 1
+            return self.level, current_index          
         
-        
-        
-        
-        
+              
         
         
         
