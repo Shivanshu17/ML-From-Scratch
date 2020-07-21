@@ -3,7 +3,7 @@ import numpy as np
 
 
 class CART():
-    def __init__(self, data, cost = 1, max_depth = 3):
+    def __init__(self, data, cost = 1, max_depth = 4, minimum_data_points = 50):
         '''
         This class will implement the CART DT algo, and predict the class labels for the given test data
         
@@ -18,6 +18,7 @@ class CART():
         self.data = data #It assumes that the data is numeric (even for categorical data, that it has been preprocessed to convert it into form of categories)
         self.cost = cost
         self.max_Depth = max_depth
+        self.minimum_data_points = minimum_data_points
         self.model_params = pd.DataFrame(columns = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']) 
         self.model_params['child_index'] = self.model_params['child_index'].astype('object')
         '''
@@ -36,8 +37,8 @@ class CART():
         self.class_labels = y_keys
         self.level = [0]
         self.index = [-1]
-        updated_level, updated_index = self.fit(df = self.data, self.attribute_list, self.index) # Have to make sure that this funciton definition is correct.
-        if updated_level == 0:
+        updated_level, updated_index = self.fit(df = self.data, attributes = self.attribute_list) # Have to make sure that this funciton definition is correct.
+        if updated_level == 0 and update_index == -1:
             print("Decision Tree training process was successful")
         
         
@@ -127,17 +128,20 @@ class CART():
     
     
     
-    def node_class_label(self, ):
+    def node_class_label(self, df):
         '''
         This function would assign the class label to the nodes that have met the "stopping_condition".
-        It will also have to take into consideration various scenarios like when a node might not even have a single instance, etc.
         
         After having sorted through the scenarios and settling for a class label, it is then stored in the 'class_label' column of the self.model_params
         
+        Args:
+            df (DataFrame) -> Dataframe as sent by the fit function with the output class as the last column
+        
         
         '''
-        
-        
+        output_column = df.iloc[:, -1]
+        class_labels = list(output_column.value_counts().index)
+        return class_labels[0]
         
         
 
@@ -169,7 +173,7 @@ class CART():
         
     
     
-    def check_split_criteria(self, ):
+    def check_split_criteria(self, df):
         '''
         This function is called upon by fit module at each node and it decides whether or not the splitting conditions have been met.
         
@@ -178,18 +182,21 @@ class CART():
         
         
         '''
+        stop_splits = False
+        # To check if the node only contains one class
+        no_of_classes = len(pd.unique(df.iloc[:, -1]))
+        # If the node contains less than a certain number of data points
+        len_of_data = len(df)
+        # To check if the maximum depth is reached
+        depth = self.level[0]
+        # To check if the node purity is sufficient (or node_entropy is too high for the best split). I will most probably call the information_gain() with each individual attribute to check if the best attribute split isn't any good either; The code would probably be largely derived from attribute selector
+        # Another approach to node purity might be to evaluate the softmax value of each class, and if the highest value is higher than the node purity we are looking for, then we can stop splitting
+        node_purity = df.iloc[:, -1].value_counts(normalize = True).iloc[0] # Still have to make sure the returned value of value_counts is suitable of iloc
         
-        
-        
-        
-        
-    def create_node(self, ):
-        '''
-        This function creates the node in the self.model_params dataframe. This function is optional, and I will try to include it within fit function
-        
-        '''
-        
-        
+        if no_of_classes == 1 or len_of_data < self.minimum_data_points or depth<self.max_Depth or node_purity >= 0.95:
+            stop_splits = True
+        return stop_splits
+    
         
         
         
@@ -208,9 +215,8 @@ class CART():
         
         
         '''
-        
-        stopping_condition = self.check_split_criteria(df, attributes, self.level, self.index, self.model_params) # Will probably have to pass quite a few details here as arguments, will see later...     
         self.level[0] = self.level[0] + 1
+        stopping_condition = self.check_split_criteria(df) # Will probably have to pass quite a few details here as arguments, will see later...     
         column_names = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']
         temp_param = pd.DataFrame(columns = column_names)
         temp_param['child_index'] = temp_param['child_index'].astype('object')
@@ -218,7 +224,7 @@ class CART():
         if stopping_condition:
             temp_param = pd.DataFrame(columns = column_names)
             # Code for assigning class labels
-            temp_param.class_label = node_class_label(df, attributes)
+            temp_param.class_label = self.node_class_label(df)
             temp_param.level = self.level[0]
             temp_param.attribute_type = 'Leaf'
             temp_param.parent_index = self.index[0]
@@ -238,12 +244,12 @@ class CART():
             self.attribute_list = self.attribute_list.drop(temp_param.attribute_name)
             condition_array = np.array([np.NINF, temp_param.condition, np.INF])
             attribute_name = temp_param.attribute_name
-            current_index = len(self.model_params) - 1 # This would only work if python stores a variable stack of the caller function during the recurssive call
+            current_index = len(self.model_params) - 1 # This could also be self.index[0]. This would only work if python stores a variable stack of the caller function during the recurssive call
             for i in range(2):
                 df_updated = df.loc[(df[attribute_name]> condition_array[i]) & (df[attribute_name] <= condition_array[i+1])]
-                self.level[0], child_index_value = self.fit(df_updated, self.attribute_list)
-                self.model_params.iloc[current_index, child_index[i]] = child_index_value
-            self.attribute_list.append(temp_param.attribute_name)
+                self.level[0], child_index_value = self.fit(df = df_updated, attributes = self.attribute_list)
+                self.model_params.loc[current_index, 'child_index'][i] = child_index_value
+            self.attribute_list.append(temp_param.attribute_name) # This too, depends on whether python stores the variable stack of the caller function
             self.level[0] = self.level[0] - 1
             return self.level, current_index          
         
