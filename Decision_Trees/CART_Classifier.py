@@ -78,36 +78,36 @@ class CART():
         
         
         
-    def gini_loss(self, ):
+    def gini_loss(self, p):
         '''
         This function calculates the impurity percentage of the attribute split with gini_index
         
         
         '''
-        
+        return (p)*(1 - (p)) + (1 - p)*(1 - (1-p))
         
         
         
         
     
-    def entropy_loss(self, ):
+    def entropy_loss(self, p):
         '''
         This function calculates the impurity percentage of the attribute split with entropy_loss
         
         
         '''
+        return - p*np.log2(p) - (1 - p)*np.log2((1 - p))
         
         
         
         
-        
-    def classification_error(self, ):
+    def classification_error(self, p):
         '''
         This function calculates the impurity metric of the attribute using simple classification error
         
         
         '''
-        
+        return 1 - np.max([p, 1 - p])
         
         
         
