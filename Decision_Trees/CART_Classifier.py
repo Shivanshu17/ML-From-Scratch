@@ -19,7 +19,7 @@ class CART():
         self.cost = cost
         self.max_Depth = max_depth
         self.minimum_data_points = minimum_data_points
-        self.model_params = pd.DataFrame(columns = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']) 
+        self.model_params = pd.DataFrame(columns = ['attribute_name', 'level','node_type', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label','impurity']) 
         self.model_params['child_index'] = self.model_params['child_index'].astype('object')
         '''
         # Attribute_type will store (0, 1, 2, 3) for binomial, nominal, ordinal, and continuous data (or should it? I think it can be done without it, will have to see)
@@ -78,40 +78,83 @@ class CART():
         
         
         
-    def gini_loss(self, p):
+    def gini_loss(self, df, condition_array, type_of_data = 'categorical'):
         '''
         This function calculates the impurity percentage of the attribute split with gini_index
         
+        Args:
+            df (Series) -> pd.Series containing a single attribute column of the original data
+            condition_array (iterable) -> An array containing either the categories of the left split, or a single numerical value to measure continuous data against.
+            type_of_data (object) -> Can either be 'categorical' or 'continuous'
+        
+        Returns:
+            A gini_index score for that node with the given condition
         
         '''
+        _TYPE = ('categorical','continuous')
+        assert type_of_data is in _TYPE, 'type_of_data can only be either categorical or continuous'
+        if type == 'categorical':
+            count = len(df.isin(condition_array))
+        if type == 'continuous':
+            count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
+        p = count/df.shape[0]           
         return (p)*(1 - (p)) + (1 - p)*(1 - (1-p))
         
         
         
         
     
-    def entropy_loss(self, p):
+    def entropy_loss(self, df, condition_array, type_of_data = 'categorical'):
         '''
         This function calculates the impurity percentage of the attribute split with entropy_loss
         
+        Args:
+            df (Series) -> pd.Series containing a single attribute column of the original data
+            condition_array (iterable) -> An array containing either the categories of the left split, or a single numerical value to measure continuous data against.
+            type_of_data (object) -> Can either be 'categorical' or 'continuous'
+        
+         Returns:
+            A gini_index score for that node with the given condition
         
         '''
+        _TYPE = ('categorical','continuous')
+        assert (type_of_data is in _TYPE):
+            print('type_of_data can only be either categorical or continuous')
+        if type == 'categorical':
+            count = len(df.isin(condition_array))
+        if type == 'continuous':
+            count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
+        p = count/df.shape[0]           
+            
         return - p*np.log2(p) - (1 - p)*np.log2((1 - p))
         
         
         
         
-    def classification_error(self, p):
+    def classification_error(self,  df, condition_array, type_of_data = 'categorical'):
         '''
         This function calculates the impurity metric of the attribute using simple classification error
         
+        Args:
+            df (Series) -> pd.Series containing a single attribute column of the original data
+            condition_array (iterable) -> An array containing either the categories of the left split, or a single numerical value to measure continuous data against.
+            type_of_data (object) -> Can either be 'categorical' or 'continuous'
+        
+        Returns:
+            A gini_index score for that node with the given condition
         
         '''
+        _TYPE = ('categorical','continuous')
+        assert (type_of_data is in _TYPE):
+            print('type_of_data can only be either categorical or continuous')
+        if type == 'categorical':
+            count = len(df.isin(condition_array))
+        if type == 'continuous':
+            count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
+        p = count/df.shape[0]           
         return 1 - np.max([p, 1 - p])
         
-        
-        
-        
+
         
     
     def information_gain(self, ):
@@ -140,7 +183,7 @@ class CART():
         
         '''
         output_column = df.iloc[:, -1]
-        class_labels = list(output_column.value_counts().index)
+        class_labels = list(pd.value_counts(output_column).index)
         return class_labels[0]
         
         
@@ -150,7 +193,7 @@ class CART():
     # continuous columns in the discretized format (so that we don't have to discreticize the colummns at each call to attribute selector).
     
         
-    def attribute_selector(self, df, attribute_list ):
+    def attribute_selector(self, df, attribute_list, impurity_measure):
         '''
         This is the main function which is iteratively called to decide on the selection of attribute from the remaining set of attributes during the training
         process
@@ -164,6 +207,13 @@ class CART():
         Args:
             df (dataframe) -> The Dataframe to perform attribute selection based upon.
             attribute_list (iterable) -> Contains the names of the columns from which the ideal attribute for the node is to be selected.
+            impurity_measure (float) -> Contains the impurity_measure of the parent node. It will be used for calculating information_gain
+            
+        Returns:
+            condition (iterable) -> Contains the condition of binary split
+            child_impurity (float) -> the amount of impurity stored at the child node
+            attribute_name (object) -> The column name of the attribute that was selected
+            attribute_type (object) -> Can be binomial, ordinal, nominal, or continuous  
         
         '''
         
@@ -195,9 +245,7 @@ class CART():
         
         if no_of_classes == 1 or len_of_data < self.minimum_data_points or depth<self.max_Depth or node_purity >= 0.95:
             stop_splits = True
-        return stop_splits
-    
-        
+        return stop_splits        
         
         
     
@@ -217,7 +265,7 @@ class CART():
         '''
         self.level[0] = self.level[0] + 1
         stopping_condition = self.check_split_criteria(df) # Will probably have to pass quite a few details here as arguments, will see later...     
-        column_names = ['attribute_name', 'level', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label']
+        column_names = ['attribute_name', 'level', 'node_type', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label', 'impurity']
         temp_param = pd.DataFrame(columns = column_names)
         temp_param['child_index'] = temp_param['child_index'].astype('object')
         temp_param['child_index'] = [0, 0] # This would be an array of length equal to the number of splits in C4.5 implementation
@@ -226,7 +274,7 @@ class CART():
             # Code for assigning class labels
             temp_param.class_label = self.node_class_label(df)
             temp_param.level = self.level[0]
-            temp_param.attribute_type = 'Leaf'
+            temp_param.node_type = 'Leaf'
             temp_param.parent_index = self.index[0]
             
             # I will conclude the class label and add it to the self.model_params
@@ -235,9 +283,9 @@ class CART():
             self.index[0] = self.index[0] + 1
             return self.level, self.index
         else:
-            temp_param.condition, temp_param.attribute_name = self.attribute_selector(df, self.attribute_list)
+            temp_param.condition, temp_param.attribute_name, temp_param.attribute_type = self.attribute_selector(df, self.attribute_list)
             temp_param.level = self.level[0]
-            temp_param.attribute_type = 'Root'
+            temp_param.node_type = 'Root'
             temp_param.parent_index = self.index[0]
             self.index[0] = self.index[0] + 1
             self.model_params = pd.concat([self.model_params, temp_param], ignore_index = True)
@@ -252,8 +300,6 @@ class CART():
             self.attribute_list.append(temp_param.attribute_name) # This too, depends on whether python stores the variable stack of the caller function
             self.level[0] = self.level[0] - 1
             return self.level, current_index          
-        
-              
         
         
         
