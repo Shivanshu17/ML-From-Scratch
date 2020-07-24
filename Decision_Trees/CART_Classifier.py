@@ -3,16 +3,16 @@ import numpy as np
 
 
 class CART():
-    def __init__(self, data, cost = 'Gini Index', max_depth = 4, minimum_data_points = 50, ordinal_columns = None):
+    def __init__(self, data, cost = 'Gini', max_depth = 4, minimum_data_points = 50, ordinal_columns = None):
         '''
         This class will implement the CART DT algo, and predict the class labels for the given test data
         
         Args:
             data (DataFrame) -> Containing the training data, with the output column at the last. We assume that the data is numerical (even for nominal and ordinal columns)
-            cost (int) -> Determines the loss function to be employed:
-                0: Entropy Loss
-                1: Gini Index
-                2: Classification Loss
+            cost (object) -> Determines the loss function to be employed:
+                Entropy: Entropy Loss
+                Gini: Gini Index
+                Classification: Classification Loss
             max_depth (int) -> Defines the maximum allowed depth of the decision tree
             minimum_data_points (int) -> Defines the minimum number of data instances required for a node to exist.
             ordinal_coluns (iterable) -> Contains index values of all the columns that contain ordinal value
@@ -48,38 +48,71 @@ class CART():
         
     
     
-    
-    
-    def ordinal_combinations(self, ):
+    def ordinal_combinations(self, df):
         '''
         This function will produce all the possible permutations for binary split of ordinal data
         
         Will return a list of list of all possible combinations
         
         '''
-        
-        
+        original_array = list(df)
+        all_combinations = []
+        for i in range(1, len(original_array)-1):
+            combinations_object = itertools.combinations(a_list, r)
+            combinations_list = list(combinations_object)
+            all_combinations += combinations_list
+        original_combinations_list = combinations_list.copy()    
+        for combination in combinations_list:
+            flag = False
+            for i in range(len(combination) - 1):
+                if combination[i]>=combination[i+1]:
+                    flag = True
+                    break
+            if flag == True:
+                original_combinations_list.remove(combination)
+        return original_combinations_list
         
         
     
-    def nominal_combinations(self, ):
+    def nominal_combinations(self, df):
         '''
         This function produces all the nominal permuations for binary split pairs of the nominal data column
         
         '''
-        
-        
-        
-        
-        
+        original_array = list(df)
+        all_combinations = []
+        for i in range(1, len(original_array)-1):
+            combinations_object = itertools.combinations(a_list, r)
+            combinations_list = list(combinations_object)
+            all_combinations += combinations_list
+        return combinations_list
     
     
-    def continous_combinations(self, ):
+    
+    def continous_combinations(self, df):
         '''
         This function discretizes the continuous data and produces the permutations by treating the produced classifications as ordinal data
         
         '''
-        
+        original_array = []
+        df = df.sort_values()
+        for i in range(len(df)/2):
+            original_array.append(int((df[i] + df[i+1])/2))
+        all_combinations = []
+        for i in range(1, len(original_array)-1):
+            combinations_object = itertools.combinations(a_list, r)
+            combinations_list = list(combinations_object)
+            all_combinations += combinations_list
+        original_combinations_list = combinations_list.copy()    
+        for combination in combinations_list:
+            flag = False
+            for i in range(len(combination) - 1):
+                if combination[i]>=combination[i+1]:
+                    flag = True
+                    break
+            if flag == True:
+                original_combinations_list.remove(combination)
+        return original_combinations_list
         
         
         
@@ -104,9 +137,7 @@ class CART():
         if type == 'continuous':
             count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
         p = count/df.shape[0]           
-        return (p)*(1 - (p)) + (1 - p)*(1 - (1-p))
-        
-        
+        return ((p)*(1 - (p)) + (1 - p)*(1 - (1-p))), count
         
         
     
@@ -130,14 +161,12 @@ class CART():
             count = len(df.isin(condition_array))
         if type == 'continuous':
             count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
-        p = count/df.shape[0]           
-            
-        return - p*np.log2(p) - (1 - p)*np.log2((1 - p))
+        p = count/df.shape[0]
+        return (- p*np.log2(p) - (1 - p)*np.log2((1 - p))), count
+    
         
         
-        
-        
-    def classification_error(self,  df, condition_array, type_of_data = 'categorical'):
+    def classification_loss(self,  df, condition_array, type_of_data = 'categorical'):
         '''
         This function calculates the impurity metric of the attribute using simple classification error
         
@@ -158,7 +187,7 @@ class CART():
         if type == 'continuous':
             count = len(df[df < condition_array[0]]) # Have to make sure that this line is correct
         p = count/df.shape[0]           
-        return 1 - np.max([p, 1 - p])
+        return (1 - np.max([p, 1 - p])), count
         
 
         
@@ -171,7 +200,8 @@ class CART():
         We don't have to calculate the gain ratio in CART (because splits are limited to binary splits), but we might need to implement it for C4.5 and others
         
         1) It will call the combination functions according to the attribute_type and produce all the possible combinations for a binary split
-        2) Then it will call the loss functions according to the splits and return the best split and information gain, and the impurity measure of that split
+        2) It is to evaluate the splitting condition for continuous attribute_types after calculating the impurity_measure, and would return a value that can be directly used to compare the continuous data during inference stage.
+        3) Then it will call the loss functions according to the splits and return the best split and information gain, and the impurity measure of that split
         
         '''
         if attribute_type == 'nominal':
@@ -184,11 +214,30 @@ class CART():
             combination_list = continuous_combinations(df)
             type_of_data = 'continuous'
         
+        impurity_measures = []
+        information_gains = []
         for combination in combination_list:
-            
+            if type_of_data == 'continuous':
+                condition_array = list(combination[-1])
+            else:
+                condition_array = combination
+                
+            if self.cost == 'Entropy':
+                impurity_value, no_of_instance = self.entropy_loss(df, condition_array, type_of_data)
+                impurity_measures.append(impurity_value)
+            elif self.cost == 'Gini':
+                impurity_value, no_of_instance = self.gini_loss(df, condition_array, type_of_data)
+                impurity_measures.append(impurity_value)
+            else:
+                impurity_value, no_of_instance = self.classification_loss(df, condition_array, type_of_data)
+                impurity_measures.append(impurity_value)
+            information_gains.append(impurity_measure - (((no_of_instance/len(df)) * impurity_value) + (((len(df) - no_of_instance)/len(df))*(1-impurity_value))))
+        index_of_attribute = information_gains.index(max(information_gains))
+        child_condition = combination_list[index_of_attribute]
+        child_information_gain = max(information_gains)
+        child_impurity = impurity_measures[index_of_attribute]
+        return child_condition, child_information, child_impurity
         
-    
-    
     
     
     def node_class_label(self, df):
