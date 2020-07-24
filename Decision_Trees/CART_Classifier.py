@@ -3,22 +3,26 @@ import numpy as np
 
 
 class CART():
-    def __init__(self, data, cost = 1, max_depth = 4, minimum_data_points = 50):
+    def __init__(self, data, cost = 'Gini Index', max_depth = 4, minimum_data_points = 50, ordinal_columns = None):
         '''
         This class will implement the CART DT algo, and predict the class labels for the given test data
         
         Args:
-            data (DataFrame) -> Containing the training data, with the output column at the last.
+            data (DataFrame) -> Containing the training data, with the output column at the last. We assume that the data is numerical (even for nominal and ordinal columns)
             cost (int) -> Determines the loss function to be employed:
                 0: Entropy Loss
                 1: Gini Index
                 2: Classification Loss
+            max_depth (int) -> Defines the maximum allowed depth of the decision tree
+            minimum_data_points (int) -> Defines the minimum number of data instances required for a node to exist.
+            ordinal_coluns (iterable) -> Contains index values of all the columns that contain ordinal value
         
         '''
         self.data = data #It assumes that the data is numeric (even for categorical data, that it has been preprocessed to convert it into form of categories)
         self.cost = cost
         self.max_Depth = max_depth
         self.minimum_data_points = minimum_data_points
+        self.ordinal_columns = ordinal_columns
         self.model_params = pd.DataFrame(columns = ['attribute_name', 'level','node_type', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label','impurity']) 
         self.model_params['child_index'] = self.model_params['child_index'].astype('object')
         '''
@@ -46,9 +50,11 @@ class CART():
     
     
     
-    def ordinal_permutations(self, ):
+    def ordinal_combinations(self, ):
         '''
         This function will produce all the possible permutations for binary split of ordinal data
+        
+        Will return a list of list of all possible combinations
         
         '''
         
@@ -56,7 +62,7 @@ class CART():
         
         
     
-    def nominal_permutations(self, ):
+    def nominal_combinations(self, ):
         '''
         This function produces all the nominal permuations for binary split pairs of the nominal data column
         
@@ -68,7 +74,7 @@ class CART():
         
     
     
-    def continous_permutatons(self, ):
+    def continous_combinations(self, ):
         '''
         This function discretizes the continuous data and produces the permutations by treating the produced classifications as ordinal data
         
@@ -157,15 +163,29 @@ class CART():
 
         
     
-    def information_gain(self, ):
+    def attribute_information_gain(self, df, attribute_type, impurity_measure):
         '''
         This function is called from the attribute_selector function (for each attribute). It calculates the information gain of the split according to 
         a particular attribute. This function calls the loss_functions, based on the loss metric prescribed by the user.
         
         We don't have to calculate the gain ratio in CART (because splits are limited to binary splits), but we might need to implement it for C4.5 and others
+        
+        1) It will call the combination functions according to the attribute_type and produce all the possible combinations for a binary split
+        2) Then it will call the loss functions according to the splits and return the best split and information gain, and the impurity measure of that split
+        
         '''
+        if attribute_type == 'nominal':
+            combination_list = nominal_combinations(df)
+            type_of_data = 'categorical'
+        elif attribute_type == 'ordinal':
+            combination_list = ordinal_combinations(df)
+            type_of_data = 'categorical'
+        else:
+            combination_list = continuous_combinations(df)
+            type_of_data = 'continuous'
         
-        
+        for combination in combination_list:
+            
         
     
     
@@ -216,9 +236,22 @@ class CART():
             attribute_type (object) -> Can be binomial, ordinal, nominal, or continuous  
         
         '''
-        
-        
-        
+        attribute_df = pd.DataFrame(columns = ['attribute_name','attribute_type','impurity', 'split_condition', 'information_gain'])
+        attribute_df['split_condition'] = attribute_df['split_condition'].astype('object')
+        for attribute in attribute_list:
+            positional_index = self.all_attributes.index(attribute)
+            column_df = df.loc[:, attribute]
+            if positional_index in self.ordinal_columns:
+                attribute_type = 'ordinal'
+            elif (len(pd.unique(column_df))/ len(column_df)) < 0.05:
+                attribute_type = 'nominal'
+            else:
+                attribute_type = 'continuous'
+            split_condition, information_gain, child_impurity = attribute_information_gain(column_df, attribute_type, impurity_measure)
+            temp_list = [attribute, attribute_type, child_impurity, split_condition, information_gain]
+            pd.concat([attribute_df, pd.DataFrame(temp_list, columns = attribute_df.columns)], ignore_index = True)
+        selected_attribute = attribute_df.sort_values('information_gain', ascending = False).iloc[0, :]
+        return selected_attribute['split_condition'], selected_attribute['attribute'], selected_attribute['attribute_type'], selected_attribute['impurity']
         
         
     
@@ -241,7 +274,7 @@ class CART():
         depth = self.level[0]
         # To check if the node purity is sufficient (or node_entropy is too high for the best split). I will most probably call the information_gain() with each individual attribute to check if the best attribute split isn't any good either; The code would probably be largely derived from attribute selector
         # Another approach to node purity might be to evaluate the softmax value of each class, and if the highest value is higher than the node purity we are looking for, then we can stop splitting
-        node_purity = df.iloc[:, -1].value_counts(normalize = True).iloc[0] # Still have to make sure the returned value of value_counts is suitable of iloc
+        node_purity = df.iloc[:, -1].value_counts(normalize = True).iloc[0] # Still have to make sure the returned value of value_counts is suitable of iloc (We can use the impurity measure of the attribue itself, but I am not using it for now)
         
         if no_of_classes == 1 or len_of_data < self.minimum_data_points or depth<self.max_Depth or node_purity >= 0.95:
             stop_splits = True
@@ -268,7 +301,7 @@ class CART():
         column_names = ['attribute_name', 'level', 'node_type', 'attribute_type', 'condition','child_index', 'parent_index', 'class_label', 'impurity']
         temp_param = pd.DataFrame(columns = column_names)
         temp_param['child_index'] = temp_param['child_index'].astype('object')
-        temp_param['child_index'] = [0, 0] # This would be an array of length equal to the number of splits in C4.5 implementation
+
         if stopping_condition:
             temp_param = pd.DataFrame(columns = column_names)
             # Code for assigning class labels
@@ -280,10 +313,10 @@ class CART():
             # I will conclude the class label and add it to the self.model_params
             self.model_params = pd.concat([self.model_params, temp_param], ignore_index = True)
             self.leve[0] = self.level[0] - 1
-            self.index[0] = self.index[0] + 1
             return self.level, self.index
         else:
-            temp_param.condition, temp_param.attribute_name, temp_param.attribute_type = self.attribute_selector(df, self.attribute_list)
+            temp_param['child_index'] = [0, 0] # This would be an array of length equal to the number of splits in C4.5 implementation
+            temp_param.condition, temp_param.attribute_name, temp_param.attribute_type ,temp_param.impurity = self.attribute_selector(df, self.attribute_list)
             temp_param.level = self.level[0]
             temp_param.node_type = 'Root'
             temp_param.parent_index = self.index[0]
@@ -299,6 +332,7 @@ class CART():
                 self.model_params.loc[current_index, 'child_index'][i] = child_index_value
             self.attribute_list.append(temp_param.attribute_name) # This too, depends on whether python stores the variable stack of the caller function
             self.level[0] = self.level[0] - 1
+            self.index[0] = self.index[0] - 1
             return self.level, current_index          
         
         
